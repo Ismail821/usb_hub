@@ -20,10 +20,10 @@ Folder structre inside the source
         - Contains the various number of testcases which is needed and creation of the appropriate sequences
     - usb_uvc
         - Contains the uvc files that will drive the signals and talk with the DUT
-        usb_driver.sv
+        usb_driver
             - Contains the driver related code and manages the protocol
-        usb_monitor.sv
+        usb_monitor
             - Contains the uvc monitor related files
-        usb_scoreboard.sv
+        usb_scoreboard
             - Contains asertion related stuff that is used to monitor the USB protocol connect to the usb_monitor
             - monitors the protocol violation and keeps track of the outgoing and incoming transactions
