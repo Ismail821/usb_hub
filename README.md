@@ -1,4 +1,4 @@
-#USB3.2 to 16xUSB2.0 bridge IP Verification Project.
+#USB3.2 to 16xUSB2.0 bridge IP Design and Verification Project.
 
 Problem Defenition
 > Insert Text here for the problem defenition
@@ -8,14 +8,11 @@ Folder structre inside the source
     - Contains all the RTL and Design related files
 - verif
     - scoreboard
-        - Contains the scoreboard and coverage releated files needed for the checker and 
-        data verification part for the IP.
-    - sequence
-        - Has the sequences that should be extended from the uvc's sequence class for having more customizatation 
-        on the testcases.
-    - testbench
-        - Contains the main testbench top file where the port connections are made and also contains the environment & 
-        vsequencer files.
+        - Contains the scoreboard and coverage releated files needed for the checker and data verification part for the IP.
+    - seqs
+        - Has the sequences that should be extended from the uvc's sequence class for having more customizatation on the testcases.
+    - tb
+        - Contains the main testbench top file where the port connections are made and also contains the environment & vsequencer files.
     - testcases
         - Contains the various number of testcases which is needed and creation of the appropriate sequences
     - usb_uvc
