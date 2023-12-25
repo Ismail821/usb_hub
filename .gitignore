@@ -1,0 +1,5 @@
+sim_build/*
+*.temp
+!test.log
+results.xml
+__pycache__
