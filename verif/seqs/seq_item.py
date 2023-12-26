@@ -1,0 +1,1 @@
+#Seqitem code copied from tinyalu testbench, needs modification

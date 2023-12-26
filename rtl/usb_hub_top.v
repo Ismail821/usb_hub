@@ -14,6 +14,7 @@ module usb_hub_top #(
 );
   
 //This Top Module shall serve as the outer most RTL module which shall have all other submodules
-
+//All the External Port Connections should come through this &
+// for the Sake of this project the Clock is also Connected through This
 
 endmodule
