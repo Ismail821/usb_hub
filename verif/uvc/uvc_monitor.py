@@ -3,9 +3,14 @@ from pyuvm import uvm_monitor
 from pyuvm import uvm_analysis_port
 from pyuvm import UVMError
 from uvc import *
+from uvc import USB_Hispeed_Data_Seq_Item
+from uvc import USB_Lowspeed_Data_Seq_Item
+
 #refer to the __init__.py file under the uvc folder, it imports all the files under uvc folder
 
 class USB_Hispeed_Monitor(uvm_monitor):
+
+  hispeed_if = 0
 
   def __init__(self, name, USB_Hispeed_If, hi_clock):
     self.name     = name
@@ -14,7 +19,7 @@ class USB_Hispeed_Monitor(uvm_monitor):
     self.tx_minus = USB_Hispeed_If.tx_minus
     self.rx_plus  = USB_Hispeed_If.rx_plus
     self.rx_minus = USB_Hispeed_If.tx_minus
-    self.usb_hispeed_data_seq_item = USB_Hispeed_Data_Seq_Item("monitor_pkt")
+    self.hispeed_data = USB_Hispeed_Data_Seq_Item("monitor_pkt")
 
   def build_phase(self):
     self.usb_hi_speed_ap   = uvm_analysis_port("usb_hi_speed", self)
@@ -41,15 +46,16 @@ class USB_Lowspeed_Monitor(uvm_monitor):
 
   START_OF_PACKET_D_PLUS  = 1
   START_OF_PACKET_D_MINUS = 1
+  lowspeed_if = 0
 
-  def __init__(self, name, USB_Hispeed_If, low_clock):
+  def __init__(self, name, low_clock):
     self.name     = name
     self.low_clock = low_clock
     self.d_plus   = 0
     self.d_minus  = 0
     self.d_plus   = 0
     self.d_minus  = 0
-    self.usb_lowspeed_data_seq_item = USB_Lowspeed_Data_Seq_Item("monitor_pkt")
+    self.lowspeed_data = USB_Lowspeed_Data_Seq_Item()
 
   def build_phase(self):
     self.usb_hi_speed_ap   = uvm_analysis_port("usb_hi_speed", self)
@@ -87,8 +93,8 @@ class USB_Lowspeed_Monitor(uvm_monitor):
 
 
   def decode_val(self):
-    self.d_plus   = USB_Hispeed_If.d_plus
-    self.d_minus  = USB_Hispeed_If.d_minus
+    self.d_plus   = self.lowspeed.d_plus
+    self.d_minus  = self.hispeed_if.d_minus
     if(self.d_plus == self.d_plus_prev & self.d_minus == self.d_minus_prev):
       #Same values means no change in signals, which represents 0
       self.d_plus_prev  = self.d_plus

@@ -1,8 +1,8 @@
 class Uvc_If():
 
   def __init__(self, name, dut, num_devices):
-    self.usb_lowspeed_if = [USB_Lowspeed_If("usb_device", dut, i) for i in range(num_devices)]
-    self.usb_hispeed_if  = USB_Hispeed_If("usb_host", dut)
+    self.lowspeed_if_a = [USB_Lowspeed_If("usb_device", dut, i) for i in range(num_devices)]
+    self.hispeed_if  = USB_Hispeed_If("usb_host", dut)
 
 class USB_Lowspeed_If():
 
