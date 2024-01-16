@@ -1,6 +1,6 @@
 from pyuvm import uvm_agent
 from cocotb import *
-from cocotb import clock
+from cocotb.clock import Clock
 import cocotb
 
 from verif.uvc.uvc_if import USB_uvc_if
@@ -55,8 +55,8 @@ class USB_uvc_agent (uvm_agent):
       # self.device_drvr[i]
 
   async def run_phase(self):
-    c = clock(cocotb.top.low_clock, 10, 'ns')
-    await cocotb.start(c.start())
+    Clock(self.low_clock, 100, 'us').start()
+    Clock(self.hi_clock, 10, 'us').start()
     #cocotb.start_soon(clock(signal=self.low_clock, period=1000).start(cycles=100))
     #cocotb.start_soon(clock(signal=self.hi_clock, period=100).start(cycles=1000))
 
