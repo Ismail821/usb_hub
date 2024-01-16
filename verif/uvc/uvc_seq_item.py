@@ -4,6 +4,9 @@ from pyuvm import UVMError
 import random
 import cocotb
 import crcmod
+import logging
+
+logger = logging.getLogger()
 
 class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
 
@@ -21,15 +24,16 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   def randomize(self):
     self.d_data_bytes = random.randint(0,1024)
     self.d_data       = random.randint(0, 8*self.data_bytes)
-    msg = "Randomized Data for transactions: 0x" + str(hex(self.d_data))
-    uvm_root.logger.info(self.NAME + msg)
+    msg = "Randomized Data for transactions: 0x%0h", hex(self.d_data)
+    logger.info(self.NAME + msg)
 
   def __eq__(self, other):
     if (self.d_data == other.d_data):
       msg  = "Data Comparision Succesfull Actual: "
-      uvm_root.logger.info(self.NAME + msg +str(hex(self.d_data)))
+      logger.info(self.NAME + msg +str(hex(self.d_data)))
     else:
       msg  = "Data Comparision Failed Actual: "
+      logger.error(self.NAME + msg +str(hex(self.d_data)) + "Received: " + str(hex(other.d_data)))
       UVMError(self.NAME + msg +str(hex(self.d_data)) + "Received: " + str(hex(other.d_data)))
     return 
 
@@ -77,17 +81,17 @@ class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):
   def __eq__(self, other):
     if (self.d_data == other.d_data):
       msg  = "Data Comparision Succesfull Actual: "
-      uvm_root.logger.info(self.NAME + msg +str(self.d_data))
+      logger.info(self.NAME + msg +str(self.d_data))
     else:
       msg  = "Data Comparision Failed Actual: "
-      uvm_root.logger.info(self.NAME + msg +str(self.d_data) + "Received: " + str(other.d_data))
+      logger.erro
     return 
 
   def calculate_crc(self):
     #crcmod.mkCrcFun(self.CRC_POLYNOMIAL, False, )
     self.d_crc =  crcmod.Crc(self.CRC_POLYNOMIAL, initCrc=0xFFFF)
     msg = "Calculating CRC for Data: "
-    uvm_root.logger.info(self.NAME + msg +str(self.d_data) + "CRC: " + str(self.d_crc._crc))
+    logger.info(self.NAME + msg +str(self.d_data) + "CRC: " + str(self.d_crc._crc))
     return self.d_crc._crc
   
   def __str__(self):

@@ -1,23 +1,31 @@
-#Seqitem code copied from tinyalu testbench, needs modification
 from cocotb.triggers import Join, Combine
+from verif.seqs.sequence import USB_main_seq
+from verif.tb.env import USB_env
 from pyuvm import *
-import cocotb
+from verif import *
 import pyuvm
-import random
+import cocotb
 
-@pyuvm.test()
-class usb_base_test(uvm_test):
-  """Test ALU with random and max values"""
-  #Eg: test_one should be a top level sequence which should create the Seperate request & Response sequence
+##We can USB_base_test as the base test which will do only the necesary instantiation with default values.
+##The derived testcases can define specific tests
+@pyuvm.test(skip=True)
+class USB_base_test(uvm_test):
   def build_phase(self):
-    self.env = 0 #usb_env("env", self)
-
-  def end_of_elaboration_phase(self):
-    self.test_one           = 0 #test_one.create("test_one")
-    #self.test_one_by_one    = test_one.create("test_one_by_one")
-    #self.test_parallely     = test_one.create("test_parallely")
+    self.env = USB_env("USB_env", self)
+    self.main_seq = USB_main_seq.create("main_seq")
 
   async def run_phase(self):
     self.raise_objection()
-    await self.test_one.start()
+    await self.main_seq.start()
     self.drop_objection()
+
+@pyuvm.test()
+class USB_one_test(USB_base_test):
+      
+  def build_phase(self):
+    ConfigDB().set(None, "", "number_of_devices", 1)
+    return super().build_phase()
+
+  def end_of_elaboration_phase(self):
+    ConfigDB().set(None,"", "Test_case", "test_one")
+    super().end_of_elaboration_phase()

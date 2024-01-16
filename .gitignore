@@ -1,5 +1,5 @@
 sim_build/*
 *.temp
-!test.log
+test*.log
 results.xml
 __pycache__

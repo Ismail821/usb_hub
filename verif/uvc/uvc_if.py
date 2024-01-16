@@ -1,16 +1,24 @@
-class Uvc_If():
+from pyuvm import *
+import pyuvm
 
-  def __init__(self, name, dut, num_devices):
-    self.lowspeed_if_a = [USB_Lowspeed_If("usb_device", dut, i) for i in range(num_devices)]
-    self.hispeed_if  = USB_Hispeed_If("usb_host", dut)
+
+class USB_uvc_if(uvm_object):
+
+  def __init__(self, name, uvc_cfg):
+    self.uvc_cfg      = uvc_cfg
+    self.dut          = cocotb.top
+    self.device_if_a  = [USB_Lowspeed_If("usb_device", self.dut, i) for i in range(self.uvc_cfg.number_of_devices)]
+    self.host_if      = USB_Hispeed_If("usb_host", self.dut)
+    super().__init__(name=name)
 
 class USB_Lowspeed_If():
 
   def __init__(self, name, Dut, device_num):
     self.dut      = Dut
     self.name     = name + str(device_num)
-    self.d_plus   = self.dut.device_d_plus[device_num]
-    self.d_minus  = self.dut.device_d_minus[device_num]
+    # self.d_plus   = self.dut.device_d_plus[device_num]
+    # self.d_minus  = self.dut.device_d_minus[device_num]
+    #ISMAIL_BOZO check how to connect a unpacked to packed connection
     
 class USB_Hispeed_If():
 

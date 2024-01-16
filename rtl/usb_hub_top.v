@@ -2,7 +2,7 @@ module usb_hub_top #(
   parameter NUM_USB_DEVICES = 16
 ) (
   input   hi_clock,
-  input   lo_clock,
+  input   low_clock,
   inout   host_d_plus,
   inout   host_d_minus,
   output  host_tx_plus,
