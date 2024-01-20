@@ -1,11 +1,11 @@
 from cocotb.triggers import Join, Combine
 from pyuvm import uvm_sequence
 from pyuvm import ConfigDB
-from verif import *
 import cocotb
 import pyuvm
 import logging
 from verif.uvc.uvc_seq_item import USB_Lowspeed_Data_Seq_Item
+from verif.uvc.uvc_seq_item import USB_Hispeed_Data_Seq_Item
 
 logger = logging.getLogger()
 
@@ -19,12 +19,12 @@ class USB_main_seq(uvm_sequence):
     testcase     = ConfigDB().get(None,"", "Test_case")
     if (testcase == "test_one"):
       ConfigDB().set(None, "", "Number_of_devices", 0)
-      logger.info("Starting Testcase sequence: %s", testcase)
+      logger.info("Starting Testcase sequence: ", testcase)
       current_seq  = USB_test_one(testcase)
     else:
       ConfigDB().set(None, "", "Number_of_devices", 1)
       logger.fatal("No valid Testcase Proveded %s", testcase)
-    current_seq.start()
+    await current_seq.start()
 
 
 class USB_test_one(uvm_sequence):
@@ -34,8 +34,8 @@ class USB_test_one(uvm_sequence):
   This needs to be modified to pick any random device. 
   """
   async def body(self):
-    host_low_seqr     = ConfigDB().get(None, "", "Host_Low_Seqr")
-    device_low_seqr   = ConfigDB().get(None, "", "Device_Low_Seqr0")
+    host_low_seqr     = ConfigDB().get(None, "", "Host_low_seqr")
+    device_low_seqr   = ConfigDB().get(None, "", "Device_seqr_0")
     host_low_seq      = USB_low_seq("host_low_seq")
     device_seq0       = USB_low_seq("device_seq")
     host_low_seq.start(host_low_seqr)
@@ -68,7 +68,7 @@ class USB_hi_seq(uvm_sequence):
 
   async def body(self):
     for i in range (10):
-      hi_seq_item = USB_Lowspeed_Data_Seq_Item("Host_req_hi_item")
+      hi_seq_item = USB_Hispeed_Data_Seq_Item("Host_req_hi_item")
       hi_seq_item.randomize()
       await self.start_item(hi_seq_item)
       await self.finish_item(hi_seq_item)

@@ -3,6 +3,7 @@ from cocotb import *
 from cocotb.clock import Clock
 import cocotb
 
+from cocotb.triggers import RisingEdge
 from verif.uvc.uvc_if import USB_uvc_if
 from verif.uvc.uvc_monitor import USB_Hispeed_Monitor
 from verif.uvc.uvc_monitor import USB_Lowspeed_Monitor
@@ -57,6 +58,10 @@ class USB_uvc_agent (uvm_agent):
   async def run_phase(self):
     Clock(self.low_clock, 100, 'us').start()
     Clock(self.hi_clock, 10, 'us').start()
+    for i in range (10):
+      RisingEdge(self.low_clock)
+      clock += 1
+    
     #cocotb.start_soon(clock(signal=self.low_clock, period=1000).start(cycles=100))
     #cocotb.start_soon(clock(signal=self.hi_clock, period=100).start(cycles=1000))
 
