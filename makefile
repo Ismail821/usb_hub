@@ -1,5 +1,5 @@
 CWD=$(shell pwd)
-# export COCOTB_REDUCED_LOG_FMT = 1
+export COCOTB_REDUCED_LOG_FMT = 0
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES += $(CWD)/rtl/usb_hub_top.v

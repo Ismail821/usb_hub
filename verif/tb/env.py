@@ -9,6 +9,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Env")
+logger.setLevel(logging.DEBUG)
 
 class USB_env(uvm_env):
 

@@ -2,6 +2,9 @@ from pyuvm import uvm_agent
 from cocotb import *
 from cocotb.clock import Clock
 import cocotb
+import logging
+logger = logging.getLogger("Uvc")
+logger.setLevel(logging.DEBUG)
 
 from cocotb.triggers import RisingEdge
 from verif.uvc.uvc_if import USB_uvc_if
@@ -19,6 +22,7 @@ class USB_uvc_agent (uvm_agent):
 
   def build_phase(self):
     
+    logger.info(msg="Creating Interface")
     self.uvc_if        = USB_uvc_if(name="uvc_interface_to_dut", uvc_cfg=self.uvc_cfg)
 
     self.device_mon_a  = [USB_Lowspeed_Monitor( name      ="device_mon"+str(i), 
@@ -27,6 +31,7 @@ class USB_uvc_agent (uvm_agent):
                                               low_clock   = self.low_clock,
                                               lowspeed_if = self.uvc_if.device_if_a[i]
                                             ) for i in range (self.uvc_cfg.number_of_devices)]
+    logger.info(msg="Creating Low Speed Device Monitor Array")
     # self.device_drvr[i]  = USB_Lowspeed_Monitor("device_mon"+str(i), self.vc_cfg)
     self.host_hi_mon   = USB_Hispeed_Monitor( name        = "host_hispeed_mon",
                                               uvc_cfg     = self.uvc_cfg,
@@ -34,38 +39,32 @@ class USB_uvc_agent (uvm_agent):
                                               hi_clock    = self.hi_clock,
                                               hi_speed_if  = self.uvc_if.host_if
                                             )
+    logger.info(msg="Creating Hi Speed Host Monitor ")
     self.host_low_mon  = USB_Lowspeed_Monitor(name        = "host_lospeed_mon",
                                               uvc_cfg     = self.uvc_cfg,
                                               parent      = self,
                                               low_clock   = self.low_clock,
                                               lowspeed_if = self.uvc_if.host_if
                                             )
+    logger.info(msg="Creating Hi Speed Device Monitor ")
     # self.host_hi_drvr  = 
     # self.host_low_drvr = 
 
-  def start_of_simulation_phase(self):
-    self.host_hi_mon.start_of_simulation_phase()
-    self.host_low_mon.start_of_simulation_phase()
-    # self.generate_low_clock()
-    # self.generate_hi_clock()
-    # Join
-    # self.host_hi_drvr
-    # self.host_low_drvr
-    for i in range (self.uvc_cfg.number_of_devices):
-      self.device_mon_a[i].start_of_simulation_phase()
-      # self.device_drvr[i]
-
   async def run_phase(self):
-    Clock(self.low_clock, 100, 'us').start()
-    Clock(self.hi_clock, 10, 'us').start()
+    self.cycle = 0
+    logger.info(msg="Starting Low Clock generation")
+    self.generate_low_clock()
+    logger.info(msg="Starting Hi Clock generation")
+    self.generate_hi_clock()
     for i in range (10):
-      RisingEdge(self.low_clock)
-      clock += 1
-    
-    #cocotb.start_soon(clock(signal=self.low_clock, period=1000).start(cycles=100))
-    #cocotb.start_soon(clock(signal=self.hi_clock, period=100).start(cycles=1000))
+      await RisingEdge(self.uvc_if.dut.low_clock)
+      self.cycle += 1
+      logger.info(msg="Hello Current cycle (Low clock) = "+str(self.cycle))
 
+  async def generate_low_clock(self):
+    logger.info(msg="Starting Clock generation")
+    Clock(self.uvc_if.dut.hi_clock, 10, 'us').start()
 
-  # async def generate_low_clock(self):
-
-  # async def generate_hi_clock(self):
+  async def generate_hi_clock(self):
+    logger.info(msg="Starting Clock generation")
+    Clock(self.uvc_if.dut.low_clock, 100, 'us').start()
