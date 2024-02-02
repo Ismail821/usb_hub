@@ -25,6 +25,7 @@ class USB_Hispeed_If():
   def __init__(self, name, Dut):
     self.dut      = Dut
     self.name     = name
+    self.hi_clock = self.dut.hi_clock
     self.d_plus   = self.dut.host_d_plus
     self.d_minus  = self.dut.host_d_minus
     self.tx_plus  = self.dut.host_tx_plus

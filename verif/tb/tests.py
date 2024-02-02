@@ -7,17 +7,20 @@ import pyuvm
 import cocotb
 import logging
 
-global_logger = logging.getLogger()
-global_logger.setLevel(logging.DEBUG)
-logger = logging.getLogger("Test")
-logger.setLevel(logging.DEBUG)
 
 ##We can USB_base_test as the base test which will do only the necesary instantiation with default values.
 ##The derived testcases can define specific tests
 class USB_base_test(uvm_test):
+
+  def __init__(self, name, parent):
+    name   = "usb_base_test"
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    super().__init__(name, parent)
+
   def build_phase(self):
     logger.info("Creating USB_env")
-    self.env = USB_env("USB_env", self)
+    self.env = USB_env("Env", self)
     logger.info("Creating Main Sequence")
     self.main_seq = USB_main_seq.create("main_seq")
 
@@ -32,6 +35,12 @@ class USB_base_test(uvm_test):
 @pyuvm.test()
 class USB_one_test(USB_base_test):
       
+  def __init__(self, name, parent):
+    name   = "usb_one_test"
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    super().__init__(name, parent)
+
   def build_phase(self):
     ConfigDB().set(None, "", "number_of_devices", 1)
     logger.info("Build_Phase: ConfigDB - Number of Devices for the test = %s", 1)

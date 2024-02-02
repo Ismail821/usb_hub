@@ -7,7 +7,6 @@ import logging
 from verif.uvc.uvc_seq_item import USB_Lowspeed_Data_Seq_Item
 from verif.uvc.uvc_seq_item import USB_Hispeed_Data_Seq_Item
 
-
 class USB_main_seq(uvm_sequence):
   """
   USB_main_seq: The Main sequence that is started for all the Tests, This Sequence decides on
@@ -59,6 +58,7 @@ class USB_test_one(uvm_sequence):
     device_low_seq_task    = cocotb.start_soon(device_seq0.start(device_low_seqr))
     self.logger.info("All Sequences Started, Waiting for them to finish")
     await(Combine(host_low_seq_task, device_low_seq_task))
+    self.logger.info("All Sequences Completed, Sequences ending Soon")
 
 class USB_test_all(uvm_sequence):
   """
@@ -104,19 +104,29 @@ class USB_hi_seq(uvm_sequence):
 class USB_low_seq(uvm_sequence):
 
   def __init__(self, name):
-    self.name = name
+    super().__init__(name=name)
     self.logger = logging.getLogger(name)
     self.logger.setLevel(logging.DEBUG)
-    super().__init__(name=name)
+    self.name = name
 
   async def body(self):
     self.logger.info("Entering Body")
     for i in range(10):
-      low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_seq_item")
+      low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_seq_item"+str(i))
       low_seq_item.randomize()
       self.logger.info("Sequence item randomized: TID:%s ", low_seq_item.transaction_id)
+      """"""
+      # import debugpy
+      # listen_host, listen_port = debugpy.listen(("localhost", 12345))
+      # cocotb.log.info("Waiting for Python debugger attach on {}:{}".format(listen_host, listen_port))
+      # # Suspend execution until debugger attaches
+      # debugpy.wait_for_client()
+      # debugpy.breakpoint()  # or debugpy.breakpoint() on 3.6 and below
+      """"""
+      self.logger.critical("Sequence Starting item: low_seq_item")
       await self.start_item(low_seq_item)
-      # await self.finish_item(low_seq_item)
+      self.logger.critical("Sequence finished sequence.start_item")
+      await self.finish_item(low_seq_item)
       self.logger.info("Sequence item Sent: %s", low_seq_item.transaction_id)
     self.logger.info("Done generating sequence loops")
 

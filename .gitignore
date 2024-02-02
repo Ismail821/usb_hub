@@ -3,3 +3,4 @@ sim_build/*
 test*.log
 results.xml
 __pycache__
+launch.json
