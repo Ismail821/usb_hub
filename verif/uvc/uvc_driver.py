@@ -1,4 +1,4 @@
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, FallingEdge, Timer
 from pyuvm import uvm_driver
 from pyuvm import uvm_analysis_port
 from pyuvm import UVMError
@@ -21,12 +21,12 @@ class USB_hispeed_driver(uvm_driver):
 
   async def run_phase(self):
     self.logger.info("Starting Hi speed Driver")
-    while True:
-      self.hi_item = USB_Hispeed_Data_Seq_Item("Driver_hi_item")
-      self.logger.info("Waiting for sequence item")
-      self.hi_item = await self.seq_item_port.get_next_item()
-      self.logger.info("Received sequence item, Starting transaction")
-      self.start_transaction()
+    # while True:
+    #   # self.hi_item = USB_Hispeed_Data_Seq_Item("Driver_hi_item")
+    #   self.logger.info("Waiting for sequence item")
+    #   self.hi_item = await self.seq_item_port.get_next_item()
+    #   self.logger.info("Received sequence item, Starting transaction")
+    #   self.start_transaction()
 
   async def start_transaction(self):
     await self.initialize_port()
@@ -69,6 +69,10 @@ class USB_lowspeed_driver(uvm_driver):
     super().connect_phase()
 
   async def run_phase(self):
+    # await FallingEdge(self.low_speed_if.dut.low_clock)
+    self.logger.critical("Start of Driver, Waiting 1us to avoid Deadlock")
+    await Timer(units='us', time=1)
+    self.logger.critical("Done Waiting 1us, Now starting to get item")
     while True:
       self.low_item = USB_Hispeed_Data_Seq_Item("Driver_hi_item")
       self.logger.info("Waiting for sequence item")

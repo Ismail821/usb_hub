@@ -25,10 +25,14 @@ class USB_Hispeed_If():
   def __init__(self, name, Dut):
     self.dut      = Dut
     self.name     = name
-    self.hi_clock = self.dut.hi_clock
+    # self.hi_clock = self.dut.hi_clock
     self.d_plus   = self.dut.host_d_plus
     self.d_minus  = self.dut.host_d_minus
     self.tx_plus  = self.dut.host_tx_plus
     self.tx_minus = self.dut.host_tx_minus
     self.rx_plus  = self.dut.host_rx_plus
     self.rx_minus = self.dut.host_rx_minus
+
+
+
+# $$##To Do tomorrow: USB_UVC: //25-02-24 Make the driver wait half a clock with a negedge clock

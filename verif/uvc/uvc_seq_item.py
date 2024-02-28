@@ -15,6 +15,7 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
 
   def __init__(self, name):
     super().__init__(name)
+    self.name   = name
     self.logger = logging.getLogger(name)
     self.logger.setLevel(logging.DEBUG)
 
@@ -45,8 +46,8 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
     uvm_root.self.logger.info(self.NAME + msg +str(self.d_data) + "CRC: " + str(self.d_crc._crc))
     return self.d_crc._crc
   
-  def __str__(self):
-    return f"D_Data: 0x{self.d_data:x}"
+  # def __str__(self):
+  #   return f"D_Data: 0x{self.d_data:x}"
 
 
 class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):

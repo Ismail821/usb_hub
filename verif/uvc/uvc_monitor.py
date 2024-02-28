@@ -20,7 +20,7 @@ class USB_Hispeed_Monitor(uvm_monitor):
     super().build_phase()
 
   def connect_phase(self):
-    self.hi_clock = self.hi_speed_if.hi_clock
+    self.hi_clock = self.hi_speed_if.dut.hi_clock
     self.tx_plus  = self.hi_speed_if.tx_plus
     self.tx_minus = self.hi_speed_if.tx_minus
     self.rx_plus  = self.hi_speed_if.rx_plus

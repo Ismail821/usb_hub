@@ -20,12 +20,28 @@ class USB_base_test(uvm_test):
 
   def build_phase(self):
     logger.info("Creating USB_env")
-    self.env = USB_env("Env", self)
+    print("\n\n--------------------------------START-OF-BUILD-PHASE---------------------------------------\n\n")
+    self.env = USB_env("Usb_Env", self)
     logger.info("Creating Main Sequence")
     self.main_seq = USB_main_seq.create("main_seq")
 
+  def connect_phase(self):
+    print("\n\n--------------------------------START-OF-CONNECT-PHASE---------------------------------------\n\n")
+    self.logger.info("usb test, in connect phase")
+    return super().connect_phase()
+
+  def end_of_elaboration_phase(self):
+    print("\n\n--------------------------------END-OF-ELABORATION-PHASE---------------------------------------\n\n")
+    self.logger.info("usb test, done with Elaboration phase")
+    return super().end_of_elaboration_phase()
+  
+  def start_of_simulation_phase(self):
+    print("\n\n--------------------------------START-OF-SIMULATION-PHASE---------------------------------------\n\n")
+    return super().start_of_simulation_phase()
+
   async def run_phase(self):
     self.raise_objection()
+    print("\n\n--------------------------------START-OF-RUN-PHASE---------------------------------------\n\n")
     logger.info("Main Sequence Start")
     main_seq_task = cocotb.start(self.main_seq.start())
     await(main_seq_task)

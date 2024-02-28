@@ -56,12 +56,12 @@ class USB_uvc_agent (uvm_agent):
                                               lowspeed_if = self.uvc_if.device_if_a[i]
                                             ) for i in range (self.uvc_cfg.number_of_devices)]
     self.logger.info(msg="Creating Low Speed Device driver Array")
-    self.host_hi_drvr   = USB_hispeed_driver( name        = "host_hispeed_drvr",
-                                              uvc_cfg     = self.uvc_cfg,
-                                              parent      = self,
-                                              hi_clock    = self.hi_clock,
-                                              hi_speed_if = self.uvc_if.host_if
-                                            )
+    # self.host_hi_drvr   = USB_hispeed_driver( name        = "host_hispeed_drvr",
+    #                                           uvc_cfg     = self.uvc_cfg,
+    #                                           parent      = self,
+    #                                           hi_clock    = self.hi_clock,
+    #                                           hi_speed_if = self.uvc_if.host_if
+    #                                         )
     self.logger.info(msg="Creating Hi Speed Host driver ")
     self.host_low_drvr  = USB_lowspeed_driver(name        = "host_lowspeed_drvr",
                                               uvc_cfg     = self.uvc_cfg,
@@ -72,23 +72,23 @@ class USB_uvc_agent (uvm_agent):
 
   async def run_phase(self):
     self.cycle = 0
-    self.logger.info(msg="Starting Low Clock generation")
-    self.generate_low_clock()
-    self.logger.info(msg="Starting Hi Clock generation")
-    self.generate_hi_clock()
+    # self.logger.info(msg="Starting Low Clock generation")
+    # self.generate_low_clock()
+    # self.logger.info(msg="Starting Hi Clock generation")
+    # self.generate_hi_clock()
     for i in range (10):
       await RisingEdge(self.uvc_if.dut.low_clock)
       self.cycle += 1
       self.logger.info(msg="Hello Current cycle (Low clock) = "+str(self.cycle))
 
-  async def generate_low_clock(self):
-    self.logger.info(msg="Starting Clock generation")
-    self.uvc_if.dut.low_clock = 0
-    self.low_clock = self.uvc_if.dut.low_clock
-    Clock(self.uvc_if.dut.hi_clock, 10, 'us').start()
+  # async def generate_low_clock(self):
+  #   self.logger.info(msg="Starting Clock generation")
+  #   self.uvc_if.dut.low_clock = 0
+  #   self.low_clock = self.uvc_if.dut.low_clock
+  #   Clock(self.uvc_if.dut.hi_clock, 10, 'us').start()
 
-  async def generate_hi_clock(self):
-    self.logger.info(msg="Starting Clock generation")
-    self.uvc_if.dut.hi_clock = 0
-    self.hi_clock = self.uvc_if.dut.hi_clock
-    Clock(self.uvc_if.dut.low_clock, 100, 'us').start()
+  # async def generate_hi_clock(self):
+  #   self.logger.info(msg="Starting Clock generation")
+  #   self.uvc_if.dut.hi_clock = 0
+  #   self.hi_clock = self.uvc_if.dut.hi_clock
+  #   Clock(self.uvc_if.dut.low_clock, 100, 'us').start()
