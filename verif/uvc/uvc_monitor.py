@@ -1,4 +1,4 @@
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, FallingEdge
 from pyuvm import uvm_monitor
 from pyuvm import uvm_analysis_port
 from pyuvm import UVMError
@@ -33,9 +33,10 @@ class USB_Hispeed_Monitor(uvm_monitor):
 
   async def monitor_transactions(self):
     while 1:
+      await FallingEdge(self.hi_clock)
       await RisingEdge(self.hi_clock)
-      if self.start_of_txn(self):
-        print("hi")
+      # if self.start_of_txn():
+        # print("hi")
         # if start_of_data(self):
         #   unpack(self.raw_data)
 

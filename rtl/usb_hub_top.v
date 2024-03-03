@@ -1,7 +1,7 @@
 module usb_hub_top #(
   parameter NUM_USB_DEVICES = 16
 ) (
-  input   hi_clock,
+  output  reg hi_clock,
   input   low_clock,
   inout   host_d_plus,
   inout   host_d_minus,
@@ -14,6 +14,15 @@ module usb_hub_top #(
   inout [NUM_USB_DEVICES-1:0] device_d_plus,
   inout [NUM_USB_DEVICES-1:0] device_d_minus
 );
+
+
+ initial hi_clock = 0;
+ always #5 hi_clock = ~hi_clock;
+
+initial begin
+  $display("Initial:");
+
+end
   
 //This Top Module shall serve as the outer most RTL module which shall have all other submodules
 //All the External Port Connections should come through this &

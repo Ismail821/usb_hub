@@ -14,25 +14,27 @@ class USB_main_seq(uvm_sequence):
   what subsequence sequences to start based on the Testcases. This way the testcase just, needs
   to specify the Testcase based on which we can select the sequences
   """
-  logger = logging.getLogger("Main Sequence")
-  logger.setLevel(logging.DEBUG)
 
   async def body(self):
-    self.logger.info("Main Seq Body: Starting Sequence")
+    self.logger = logging.getLogger("Main_Sequence")
+    self.logger.setLevel(logging.DEBUG)
+    self.logger.info("Starting Sequence")
     testcase     = ConfigDB().get(None,"", "Test_case")
-    self.logger.info("Main Seq Body: ConfigDB Retrieved: Test_case = " + str(testcase))
-    self.logger.info("Main Seq Body: Searching for Testcase :%s", testcase)
+    self.logger.info("ConfigDB Retrieved: Test_case = " + str(testcase))
+    self.logger.info("Searching for Testcase :%s", testcase)
 
     if (str(testcase) == "test_one"):
       ConfigDB().set(None, "", "Number_of_devices", 1)
-      self.logger.critical("Main_Seq: Starting Matching Testcase sequence: %s", testcase)
+      self.logger.critical("Starting Matching Testcase sequence: %s", testcase)
       current_seq  = USB_test_one("one_seq")
     else:
       ConfigDB().set(None, "", "Number_of_devices", 1)
       self.logger.info("Main_Seq: No Matching Testcase %s", testcase)
       self.logger.fatal("No valid Testcase Proveded %s", testcase)
-    self.logger.info("Main Seq Body: Starting Sequence " + current_seq.get_name())
-    await current_seq.start()
+      exit("No Valid Testcases Provide")
+    self.logger.critical("Starting Sequence " + current_seq.get_name())
+    await(current_seq.start())
+    self.logger.critical("Main Sequence End. Test will End Soon")
 
 
 class USB_test_one(uvm_sequence):
@@ -115,15 +117,15 @@ class USB_low_seq(uvm_sequence):
 
   async def body(self):
     self.logger.info("Entering Body")
-    for i in range(10):
+    for i in range(1):
       low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_item"+str(i))
       self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
-      await self.start_item(low_seq_item)
       low_seq_item.randomize()
-      self.logger.info("Sequence item randomized: TID: " + low_seq_item.transaction_id)
+      self.logger.info("Sequence item randomized: TID: " + str(low_seq_item.transaction_id))
+      await self.start_item(low_seq_item)
       self.logger.critical("Sequence finished sequence.start_item")
       await self.finish_item(low_seq_item)
       # self.get_response()
-      self.logger.info("Sequence item Sent: " + low_seq_item.transaction_id)
+      self.logger.info("Sequence item Sent: " + str(low_seq_item.transaction_id))
     self.logger.info("Done generating sequence loops")
 

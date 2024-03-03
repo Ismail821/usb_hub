@@ -78,18 +78,22 @@ class USB_lowspeed_driver(uvm_driver):
       self.logger.info("Waiting for sequence item")
       self.low_item = await self.seq_item_port.get_next_item()
       self.logger.info("Received sequence item, Starting transaction")
-      self.start_transaction()
+      await(self.start_transaction())
+      self.seq_item_port.item_done()
 
   async def start_transaction(self):
-    await self.initialize_port()
-    await self.sync_packets()
-    await self.start_metadata_packet()
-    await self.start_data_packet()
+    self.logger.info("Driver Starting Transaction")
+    await(self.initialize_port())
+    await(self.sync_packets())
+    await(self.start_metadata_packet())
+    await(self.start_data_packet())
 
   async def initialize_port(self):
-    await RisingEdge(self.low_clock)
-    self.low_speed_if.d_minus = 1
-    self.low_speed_if.d_plus  = 1
+    self.logger.info("Initalize Packet Awaiting PosEdge of Low Clock")
+    await RisingEdge(self.low_speed_if.low_clock)
+    self.logger.info("")
+    assert self.low_speed_if.d_minus.value(1)
+    assert self.low_speed_if.d_plus.value(1)
     #Whatever the Start signal condition is
 
   async def sync_packets(self):

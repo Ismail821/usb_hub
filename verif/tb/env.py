@@ -35,7 +35,9 @@ class USB_env(uvm_env):
     for i in range (self.number_of_devices):
       ConfigDB().set(None, "*", "Device_seqr_"+str(i), self.device_seqr_a[i])
       self.logger.info(msg="ConfigDB Registered: Device_seqr_"+str(i))
-    
+
+    ConfigDB().set(None, "*", "env", self)
+
     self.uvc_cfg          = USB_uvc_cfg.create("uvc_cfg")
     self.uvc_agent        = USB_uvc_agent("uvc_agent", self.uvc_cfg, self)
     
@@ -59,32 +61,3 @@ class USB_env(uvm_env):
     # # Suspend execution until debugger attaches
     # debugpy.wait_for_client()
     super().connect_phase()
-
-  def start_of_simulation_phase(self):
-    self.logger.critical("Starting Generation of Clocks")
-    self.logger.critical(msg="Starting Clock generation")
-    fork(Clock(self.dut.hi_clock, 10, "step").start())
-    self.logger.critical(msg="Starting Clock generation")
-    fork(Clock(signal=self.dut.low_clock, period=100, units="step").start())
-    self.generate_hi_clock()
-    self.generate_low_clock()
-    self.logger.critical("Done Starting Generation of Clocks")
-    super().start_of_simulation_phase()
-
-
-  async def run_phase(self):
-    self.count_cycles()
-    super().run_phase()
-
-  async def count_cycles(self):
-    while True:
-      await RisingEdge(self.uvc_agent.uvc_if.dut.hi_clock)
-      self.cycles=+1
-
-  async def generate_low_clock(self):
-    self.logger.critical(msg="Starting Clock generation")
-    Clock(self.dut.hi_clock, 10, "step").start()
-
-  async def generate_hi_clock(self):
-    self.logger.critical(msg="Starting Clock generation")
-    Clock(signal=self.dut.low_clock, period=1, units="step").start()
