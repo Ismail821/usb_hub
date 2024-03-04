@@ -16,8 +16,8 @@ class USB_Lowspeed_If():
   def __init__(self, name, Dut, device_num):
     self.dut      = Dut
     self.name     = name + str(device_num)
-    # self.d_plus   = self.dut.device_d_plus[device_num]
-    # self.d_minus  = self.dut.device_d_minus[device_num]
+    self.d_plus   = self.dut.device_d_plus.value[device_num]
+    self.d_minus  = self.dut.device_d_minus.value[device_num]
     #ISMAIL_TODO check how to connect a unpacked to packed connection
     
 class USB_Hispeed_If():

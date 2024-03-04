@@ -64,8 +64,8 @@ class USB_env(uvm_env):
     self.logger.critical("Starting Generation of Clocks")
     self.logger.critical(msg="Starting Clock generation")
     self.logger.critical(msg="Starting Clock generation")
-    self.generate_hi_clock()
-    self.generate_low_clock()
+    # self.generate_hi_clock()
+    # self.generate_low_clock()
     self.logger.critical("Done Starting Generation of Clocks")
     super().start_of_simulation_phase()
 

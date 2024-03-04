@@ -53,52 +53,53 @@ class USB_hispeed_driver(uvm_driver):
 class USB_lowspeed_driver(uvm_driver):
 
   def __init__(self, name, uvc_cfg, lowspeed_if, low_clock, parent):
-    self.low_speed_if    = lowspeed_if
-    self.low_clock       = low_clock
-    self.uvc_cfg         = uvc_cfg
+    self.low_speed_if = lowspeed_if
+    self.low_clock    = low_clock
+    self.uvc_cfg      = uvc_cfg
+    self.name         = name
     super().__init__(name, parent)
     self.logger   = logging.getLogger(name)
     self.logger.setLevel(logging.DEBUG)
   
   def build_phase(self):
-    self.ap = uvm_analysis_port("ap", self)
-    self.logger.info("Creating Analysis port ap")
+    self.ap = uvm_analysis_port(self.name+"ap", self)
+    self.logger.info("Creating Analysis port" + self.name + "ap")
 
 
   def connect_phase(self):
     super().connect_phase()
 
   async def run_phase(self):
-    # await FallingEdge(self.low_speed_if.dut.low_clock)
-    self.logger.critical("Start of Driver, Waiting 1us to avoid Deadlock")
-    await Timer(units='us', time=1)
-    self.logger.critical("Done Waiting 1us, Now starting to get item")
     while True:
       self.low_item = USB_Hispeed_Data_Seq_Item("Driver_hi_item")
       self.logger.info("Waiting for sequence item")
       self.low_item = await self.seq_item_port.get_next_item()
       self.logger.info("Received sequence item, Starting transaction")
-      self.start_transaction()
+      await(self.start_transaction())
       self.seq_item_port.item_done()
 
   async def start_transaction(self):
     await self.initialize_port()
     await self.sync_packets()
-    await self.start_metadata_packet()
-    await self.start_data_packet()
+    # await self.start_metadata_packet()
+    # await self.start_data_packet()
 
   async def initialize_port(self):
-    await FallingEdge(self.low_speed_if.low_clock)
-    await RisingEdge(self.low_speed_if.low_clock)
-    assert self.low_speed_if.d_minus.value == 1
-    assert self.low_speed_if.d_plus.value  == 1
+    self.logger.debug("Initializing Port, Waiting for a Raising Edge of Clock")
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+    self.logger.debug("Setting Port to SE1")
+    self.low_speed_if.dut.device_d_minus.value[0] = 1
+    self.low_speed_if.dut.device_d_plus.value[0]  = 1
     #Whatever the Start signal condition is
 
   async def sync_packets(self):
-    for i in range (4):
-      await RisingEdge(self.low_clock)
-      self.low_speed_if.d_minus = 0
-      self.low_speed_if.d_plus  = 1
-      await RisingEdge(self.low_clock)
-      self.low_speed_if.d_minus = 1
-      self.low_speed_if.d_plus  = 0
+    for i in range (6):
+      await RisingEdge(self.low_speed_if.dut.low_clock)
+      self.logger.debug("Driving J in Low_clock")
+      self.low_speed_if.dut.device_d_minus = 0
+      self.low_speed_if.dut.device_d_plus  = 1
+      await RisingEdge(self.low_speed_if.dut.low_clock)
+      self.logger.debug("Driving k in Low_clock")
+      self.low_speed_if.dut.device_d_minus = 1
+      self.low_speed_if.dut.device_d_plus  = 0
+    self.do_something

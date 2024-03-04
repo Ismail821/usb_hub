@@ -33,6 +33,7 @@ class USB_main_seq(uvm_sequence):
       self.logger.fatal("No valid Testcase Proveded %s", testcase)
     self.logger.info("Body: Starting Sequence " + current_seq.get_name())
     await current_seq.start()
+    self.logger.critical("Main sequence Ended")
 
 
 class USB_test_one(uvm_sequence):
@@ -115,7 +116,7 @@ class USB_low_seq(uvm_sequence):
 
   async def body(self):
     self.logger.info("Entering Body")
-    for i in range(10):
+    for i in range(1):
       low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_item"+str(i))
       self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
       await self.start_item(low_seq_item)
