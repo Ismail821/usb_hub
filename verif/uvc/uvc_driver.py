@@ -88,9 +88,10 @@ class USB_lowspeed_driver(uvm_driver):
     await self.start_data_packet()
 
   async def initialize_port(self):
-    await RisingEdge(self.low_clock)
-    self.low_speed_if.d_minus = 1
-    self.low_speed_if.d_plus  = 1
+    await FallingEdge(self.low_speed_if.low_clock)
+    await RisingEdge(self.low_speed_if.low_clock)
+    assert self.low_speed_if.d_minus.value == 1
+    assert self.low_speed_if.d_plus.value  == 1
     #Whatever the Start signal condition is
 
   async def sync_packets(self):

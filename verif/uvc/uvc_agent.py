@@ -73,9 +73,9 @@ class USB_uvc_agent (uvm_agent):
   async def run_phase(self):
     self.cycle = 0
     self.logger.info(msg="Starting Low Clock generation")
-    self.generate_low_clock()
+    cocotb.start_soon(self.generate_low_clock())
     self.logger.info(msg="Starting Hi Clock generation")
-    self.generate_hi_clock()
+    cocotb.start_soon(self.generate_hi_clock())
     for i in range (10):
       await RisingEdge(self.uvc_if.dut.low_clock)
       self.cycle += 1
@@ -85,10 +85,10 @@ class USB_uvc_agent (uvm_agent):
     self.logger.info(msg="Starting Clock generation")
     self.uvc_if.dut.low_clock = 0
     self.low_clock = self.uvc_if.dut.low_clock
-    Clock(self.uvc_if.dut.hi_clock, 10, 'us').start()
+    Clock(self.uvc_if.dut.hi_clock, 10, 'step').start()
 
   async def generate_hi_clock(self):
     self.logger.info(msg="Starting Clock generation")
     self.uvc_if.dut.hi_clock = 0
     self.hi_clock = self.uvc_if.dut.hi_clock
-    Clock(self.uvc_if.dut.low_clock, 100, 'us').start()
+    Clock(self.uvc_if.dut.low_clock, 100, 'step').start()
