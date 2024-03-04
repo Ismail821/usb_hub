@@ -14,24 +14,24 @@ class USB_main_seq(uvm_sequence):
   what subsequence sequences to start based on the Testcases. This way the testcase just, needs
   to specify the Testcase based on which we can select the sequences
   """
-  logger = logging.getLogger("Main Sequence")
-  logger.setLevel(logging.DEBUG)
 
   async def body(self):
-    self.logger.info("Main Seq Body: Starting Sequence")
+    self.logger = logging.getLogger("Main_Sequence")
+    self.logger.setLevel(logging.DEBUG)
+    self.logger.info("Starting Sequence")
     testcase     = ConfigDB().get(None,"", "Test_case")
-    self.logger.info("Main Seq Body: ConfigDB Retrieved: Test_case = " + str(testcase))
-    self.logger.info("Main Seq Body: Searching for Testcase :%s", testcase)
+    self.logger.info("ConfigDB Retrieved: Test_case = " + str(testcase))
+    self.logger.info("Searching for Testcase :%s", testcase)
 
     if (str(testcase) == "test_one"):
       ConfigDB().set(None, "", "Number_of_devices", 1)
-      self.logger.critical("Main_Seq: Starting Matching Testcase sequence: %s", testcase)
+      self.logger.critical("Starting Matching Testcase sequence: %s", testcase)
       current_seq  = USB_test_one("one_seq")
     else:
       ConfigDB().set(None, "", "Number_of_devices", 1)
-      self.logger.info("Main_Seq: No Matching Testcase %s", testcase)
+      self.logger.info("No Matching Testcase %s", testcase)
       self.logger.fatal("No valid Testcase Proveded %s", testcase)
-    self.logger.info("Main Seq Body: Starting Sequence " + current_seq.get_name())
+    self.logger.info("Body: Starting Sequence " + current_seq.get_name())
     await current_seq.start()
 
 

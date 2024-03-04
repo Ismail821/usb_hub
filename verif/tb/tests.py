@@ -14,15 +14,15 @@ class USB_base_test(uvm_test):
 
   def __init__(self, name, parent):
     name   = "usb_base_test"
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
     super().__init__(name, parent)
+    self.logger = logging.getLogger(name)
+    self.logger.setLevel(logging.DEBUG)
 
   def build_phase(self):
     logger.info("Creating USB_env")
     print("\n\n--------------------------------START-OF-BUILD-PHASE---------------------------------------\n\n")
     self.env = USB_env("Usb_Env", self)
-    logger.info("Creating Main Sequence")
+    self.logger.info("Creating Main Sequence")
     self.main_seq = USB_main_seq.create("main_seq")
 
   def connect_phase(self):
@@ -42,10 +42,10 @@ class USB_base_test(uvm_test):
   async def run_phase(self):
     self.raise_objection()
     print("\n\n--------------------------------START-OF-RUN-PHASE---------------------------------------\n\n")
-    logger.info("Main Sequence Start")
+    self.logger.info("Main Sequence Start")
     self.raise_objection()
-    await(cocotb.start(self.main_seq.start()))
-    logger.info("Main Sequence excecution Finished Waiting 1 second")
+    await(cocotb.start_soon(self.main_seq.start()))
+    self.logger.info("Main Sequence excecution Finished Waiting 1 second")
     self.drop_objection()
 
 @pyuvm.test()
