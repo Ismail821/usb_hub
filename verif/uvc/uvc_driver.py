@@ -102,4 +102,3 @@ class USB_lowspeed_driver(uvm_driver):
       self.logger.debug("Driving k in Low_clock")
       self.low_speed_if.dut.device_d_minus = 1
       self.low_speed_if.dut.device_d_plus  = 0
-    self.do_something

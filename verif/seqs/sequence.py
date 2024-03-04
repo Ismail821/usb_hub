@@ -34,6 +34,7 @@ class USB_main_seq(uvm_sequence):
     self.logger.info("Body: Starting Sequence " + current_seq.get_name())
     await current_seq.start()
     self.logger.critical("Main sequence Ended")
+    self.do_something
 
 
 class USB_test_one(uvm_sequence):
