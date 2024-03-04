@@ -34,8 +34,8 @@ class USB_Hispeed_Monitor(uvm_monitor):
   async def monitor_transactions(self):
     while 1:
       await RisingEdge(self.hi_clock)
-      if self.start_of_txn(self):
-        print("hi")
+      # if self.start_of_txn():
+        # print("hi")
         # if start_of_data(self):
         #   unpack(self.raw_data)
 

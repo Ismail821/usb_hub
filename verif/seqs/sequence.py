@@ -120,10 +120,10 @@ class USB_low_seq(uvm_sequence):
       self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
       await self.start_item(low_seq_item)
       low_seq_item.randomize()
-      self.logger.info("Sequence item randomized: TID: " + low_seq_item.transaction_id)
+      self.logger.info("Sequence item randomized: TID: " + str(low_seq_item.transaction_id))
       self.logger.critical("Sequence finished sequence.start_item")
       await self.finish_item(low_seq_item)
       # self.get_response()
-      self.logger.info("Sequence item Sent: " + low_seq_item.transaction_id)
+      self.logger.info("Sequence item Sent: " + str(low_seq_item.transaction_id))
     self.logger.info("Done generating sequence loops")
 

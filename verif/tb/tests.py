@@ -43,8 +43,8 @@ class USB_base_test(uvm_test):
     self.raise_objection()
     print("\n\n--------------------------------START-OF-RUN-PHASE---------------------------------------\n\n")
     logger.info("Main Sequence Start")
-    main_seq_task = cocotb.start(self.main_seq.start())
-    await(main_seq_task)
+    self.raise_objection()
+    await(cocotb.start(self.main_seq.start()))
     logger.info("Main Sequence excecution Finished Waiting 1 second")
     self.drop_objection()
 

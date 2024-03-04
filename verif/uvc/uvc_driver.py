@@ -79,6 +79,7 @@ class USB_lowspeed_driver(uvm_driver):
       self.low_item = await self.seq_item_port.get_next_item()
       self.logger.info("Received sequence item, Starting transaction")
       self.start_transaction()
+      self.seq_item_port.item_done()
 
   async def start_transaction(self):
     await self.initialize_port()

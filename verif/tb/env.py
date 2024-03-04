@@ -63,9 +63,7 @@ class USB_env(uvm_env):
   def start_of_simulation_phase(self):
     self.logger.critical("Starting Generation of Clocks")
     self.logger.critical(msg="Starting Clock generation")
-    fork(Clock(self.dut.hi_clock, 10, "step").start())
     self.logger.critical(msg="Starting Clock generation")
-    fork(Clock(signal=self.dut.low_clock, period=100, units="step").start())
     self.generate_hi_clock()
     self.generate_low_clock()
     self.logger.critical("Done Starting Generation of Clocks")
@@ -83,8 +81,10 @@ class USB_env(uvm_env):
 
   async def generate_low_clock(self):
     self.logger.critical(msg="Starting Clock generation")
+    # fork(Clock(self.dut.hi_clock, 10, "step").start())
     Clock(self.dut.hi_clock, 10, "step").start()
 
   async def generate_hi_clock(self):
     self.logger.critical(msg="Starting Clock generation")
+    # fork(Clock(signal=self.dut.low_clock, period=100, units="step").start())
     Clock(signal=self.dut.low_clock, period=1, units="step").start()
