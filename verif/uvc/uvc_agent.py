@@ -9,7 +9,8 @@ from verif.uvc.uvc_if import USB_uvc_if
 from verif.uvc.uvc_monitor import USB_Hispeed_Monitor
 from verif.uvc.uvc_monitor import USB_Lowspeed_Monitor
 from verif.uvc.uvc_driver  import USB_hispeed_driver
-from verif.uvc.uvc_driver  import USB_lowspeed_driver
+from verif.uvc.uvc_driver  import USB_lowspeed_host_driver
+from verif.uvc.uvc_driver  import USB_lowspeed_device_driver
 
 class USB_uvc_agent (uvm_agent):
   uvc_cfg   = None
@@ -49,26 +50,27 @@ class USB_uvc_agent (uvm_agent):
                                             )
     self.logger.info(msg="Creating Low Speed Host Monitor")
 
-    self.device_drvr_a  = [USB_lowspeed_driver( name      ="device_drvr"+str(i), 
+    self.device_drvr_a  = [USB_lowspeed_device_driver( name      ="device_drvr"+str(i), 
                                               uvc_cfg     = self.uvc_cfg,
                                               parent      = self,
-                                              low_clock   = self.low_clock,
-                                              lowspeed_if = self.uvc_if.device_if_a[i]
+                                              lowspeed_if = self.uvc_if.device_if_a[i],
+                                              i           = i-1
                                             ) for i in range (self.uvc_cfg.number_of_devices)]
     self.logger.info(msg="Creating Low Speed Device driver Array")
-    # self.host_hi_drvr   = USB_hispeed_driver( name        = "host_hispeed_drvr",
-    #                                           uvc_cfg     = self.uvc_cfg,
-    #                                           parent      = self,
-    #                                           hi_clock    = self.hi_clock,
-    #                                           hi_speed_if = self.uvc_if.host_if
-    #                                         )
-    self.logger.info(msg="Creating Hi Speed Host driver ")
-    self.host_low_drvr  = USB_lowspeed_driver(name        = "host_lowspeed_drvr",
+    self.host_hi_drvr   = USB_hispeed_driver( name        = "host_hispeed_drvr",
                                               uvc_cfg     = self.uvc_cfg,
                                               parent      = self,
-                                              low_clock   = self.low_clock,
-                                              lowspeed_if = self.uvc_if.host_if
+                                              hi_clock    = self.hi_clock,
+                                              hi_speed_if = self.uvc_if.host_if
                                             )
+    self.logger.info(msg="Creating Hi Speed Host driver ")
+    self.host_low_drvr  = USB_lowspeed_host_driver(name        = "host_lowspeed_drvr",
+                                              uvc_cfg     = self.uvc_cfg,
+                                              parent      = self,
+                                              lowspeed_if = self.uvc_if.host_if,
+                                              i           = 0
+                                            )
+    self.host_low_drvr.is_host_driver = 1
 
   async def run_phase(self):
     self.cycle = 0
@@ -76,10 +78,7 @@ class USB_uvc_agent (uvm_agent):
     cocotb.start_soon(self.generate_low_clock())
     self.logger.info(msg="Starting Hi Clock generation")
     cocotb.start_soon(self.generate_hi_clock())
-    for i in range (10):
-      await RisingEdge(self.uvc_if.dut.low_clock)
-      self.cycle += 1
-      self.logger.info(msg="Hello Current cycle (Low clock) = "+str(self.cycle))
+    cocotb.start_soon(self.count_clock())
 
   async def generate_low_clock(self):
     self.logger.info(msg="Starting Clock generation")
@@ -92,3 +91,9 @@ class USB_uvc_agent (uvm_agent):
     self.uvc_if.dut.hi_clock = 0
     self.hi_clock = self.uvc_if.dut.hi_clock
     cocotb.start_soon(Clock(self.uvc_if.dut.low_clock, 100, 'step').start())
+
+  async def count_clock(self):
+    while True:
+      await RisingEdge(self.uvc_if.dut.low_clock)
+      self.cycle += 1
+      self.logger.debug(msg="Low Clock Advanced: Current cycle (Low clock) = "+str(self.cycle))

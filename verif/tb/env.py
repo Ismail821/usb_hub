@@ -37,6 +37,7 @@ class USB_env(uvm_env):
       self.logger.info(msg="ConfigDB Registered: Device_seqr_"+str(i))
     
     self.uvc_cfg          = USB_uvc_cfg.create("uvc_cfg")
+    ConfigDB().set(None, "*", "uvc_cfg", self.uvc_cfg)
     self.uvc_agent        = USB_uvc_agent("uvc_agent", self.uvc_cfg, self)
     
     self.scoreboard       = USB_Scoreboard("scoreboard", parent=self)

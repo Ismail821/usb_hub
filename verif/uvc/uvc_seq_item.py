@@ -1,6 +1,6 @@
-from pyuvm import uvm_sequence_item
-from pyuvm import uvm_root
-from pyuvm import UVMError
+from pyuvm import uvm_sequence_item, ConfigDB, UVMError
+from uvc_enums import *
+import pyuvm
 import random
 import cocotb
 import crcmod
@@ -12,22 +12,31 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   DATA_MAX_BYTES  = 1024                #Usb 2.0 Spec Section 8.3.4 Says the Data Can by anywhere from 0 to 1024 Bytes
   CRC_POLYNOMIAL  = 0b1000000000000101
   CRC_REMAINDER   = 0b1000000000001101
+  req_type        = 0
+  address         = 0
+  data            = 0
+  end_point       = 0
 
   def __init__(self, name):
     super().__init__(name)
     self.name   = name
     self.logger = logging.getLogger(name)
     self.logger.setLevel(logging.DEBUG)
+    self.uvc_cfg = ConfigDB().get(None, "*", "uvc_cfg")
 
 
-  def randomize(self):
-    self.d_data   = 0
+  def randomize(self, host):
+    if(host):
+      self.req_type     = random.choice(list(packet_pid_type))
+      if(self.req_type == packet_pid_type.TOKEN)
     self.d_data_bytes = self.DATA_MAX_BYTES
     self.d_crc        = self.CRC_REMAINDER
     self.d_data_bytes = random.randint(0,1024)
     self.d_data       = random.randint(0, 8*self.d_data_bytes)
+    self.address      = random.choice(self.uvc_cfg.device_address)
     msg = "Randomized Data for transactions: 0x%0h", hex(self.d_data)
     self.logger.info(msg)
+
 
   def __eq__(self, other):
     if (self.d_data == other.d_data):
@@ -43,7 +52,7 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
     #crcmod.mkCrcFun(self.CRC_POLYNOMIAL, False, )
     self.d_crc =  crcmod.Crc(self.CRC_POLYNOMIAL, initCrc=0xFFFF)
     msg = "Calculating CRC for Data: "
-    uvm_root.self.logger.info(self.NAME + msg +str(self.d_data) + "CRC: " + str(self.d_crc._crc))
+    self.logger.info(self.NAME + msg +str(self.d_data) + "CRC: " + str(self.d_crc._crc))
     return self.d_crc._crc
   
   # def __str__(self):
@@ -102,3 +111,4 @@ class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):
   
   def __str__(self):
     return f"D_Data: 0x{self.d_data:x}"
+
