@@ -37,7 +37,7 @@ class USB_base_test(uvm_test):
   
   def start_of_simulation_phase(self):
     print("\n\n--------------------------------START-OF-SIMULATION-PHASE---------------------------------------\n\n")
-    return super().start_of_simulation_phase()
+    super().start_of_simulation_phase()
 
   async def run_phase(self):
     self.raise_objection()
@@ -47,6 +47,8 @@ class USB_base_test(uvm_test):
     await(cocotb.start_soon(self.main_seq.start()))
     self.logger.info("Main Sequence excecution Finished Waiting 1 second")
     self.drop_objection()
+    self.logger.info("Main Sequence excecution Finished")
+
 
 @pyuvm.test()
 class USB_one_test(USB_base_test):
@@ -60,7 +62,7 @@ class USB_one_test(USB_base_test):
   def build_phase(self):
     ConfigDB().set(None, "", "number_of_devices", 1)
     logger.info("Build_Phase: ConfigDB - Number of Devices for the test = %s", 1)
-    return super().build_phase()
+    super().build_phase()
 
   def end_of_elaboration_phase(self):
     ConfigDB().set(None,"", "Test_case", "test_one")
@@ -68,4 +70,4 @@ class USB_one_test(USB_base_test):
     super().end_of_elaboration_phase()
 
   def run_phase(self):
-    return super().run_phase()
+    super().run_phase()

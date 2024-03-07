@@ -75,10 +75,12 @@ class USB_uvc_agent (uvm_agent):
   async def run_phase(self):
     self.cycle = 0
     self.logger.info(msg="Starting Low Clock generation")
+
     cocotb.start_soon(self.generate_low_clock())
     self.logger.info(msg="Starting Hi Clock generation")
     cocotb.start_soon(self.generate_hi_clock())
     cocotb.start_soon(self.count_clock())
+
 
   async def generate_low_clock(self):
     self.logger.info(msg="Starting Clock generation")

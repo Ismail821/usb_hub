@@ -80,6 +80,7 @@ class USB_lowspeed_device_driver(uvm_driver):
       self.seq_item_port.item_done()
 
   async def start_transaction(self):
+
     await self.initialize_port()
     await self.sync_packets()
     # await self.start_metadata_packet()
@@ -91,7 +92,6 @@ class USB_lowspeed_device_driver(uvm_driver):
     self.logger.debug("Setting Port to SE1")
     self.low_speed_if.dut.device_d_minus.value[self.device_array] = 1
     self.low_speed_if.dut.device_d_plus.value[self.device_array]  = 1
-
     #Whatever the Start signal condition is
 
   async def sync_packets(self):
