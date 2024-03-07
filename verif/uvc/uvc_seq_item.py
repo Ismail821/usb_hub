@@ -1,9 +1,10 @@
 from pyuvm import uvm_sequence_item, ConfigDB, UVMError
-from uvc_enums import *
+from verif.uvc.uvc_enums import *
+import queue
+import crcmod
 import pyuvm
 import random
 import cocotb
-import crcmod
 import logging
 
 class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
@@ -16,26 +17,50 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   address         = 0
   data            = 0
   end_point       = 0
+  pid             = []
+  crc             = []
 
   def __init__(self, name):
     super().__init__(name)
     self.name   = name
     self.logger = logging.getLogger(name)
     self.logger.setLevel(logging.DEBUG)
-    self.uvc_cfg = ConfigDB().get(None, "*", "uvc_cfg")
+    self.uvc_cfg = ConfigDB().get(None, "", "uvc_cfg")
 
 
   def randomize(self, host):
     if(host):
-      self.req_type     = random.choice(list(packet_pid_type))
-      if(self.req_type == packet_pid_type.TOKEN)
-    self.d_data_bytes = self.DATA_MAX_BYTES
-    self.d_crc        = self.CRC_REMAINDER
-    self.d_data_bytes = random.randint(0,1024)
-    self.d_data       = random.randint(0, 8*self.d_data_bytes)
-    self.address      = random.choice(self.uvc_cfg.device_address)
-    msg = "Randomized Data for transactions: 0x%0h", hex(self.d_data)
-    self.logger.info(msg)
+      self.req_type     = random.choice(list(request_type))
+      if(self.req_type == request_type.WRITE):
+        ##----------------Command-Packet-------------------------------##
+        self.pid.append(pid_token_type.OUT)
+        self.address      = random.choice(self.uvc_cfg.device_address_list)
+        self.end_point    = random.randint(0, self.uvc_cfg.number_of_devices)
+        # self.crc.append(self.calculate_crc())
+        ##----------------Data-Packet----------------------------------##
+        self.pid.append(pid_data_type.DATA0)
+        self.d_data_bytes = random.randint(0,self.DATA_MAX_BYTES)
+        self.d_data       = random.randint(0, 8*self.d_data_bytes)
+  
+      elif(self.req_type == request_type.READ):
+        ##----------------Command-Packet-------------------------------##
+        self.pid.append(pid_token_type.IN)
+        self.address      = random.choice(self.uvc_cfg.device_address_list)
+        self.end_point    = random.randint(0, self.uvc_cfg.number_of_devices)
+        # self.crc.append(self.calculate_crc())
+        ##----------------Acknowledgement-Packet-----------------------##
+        self.pid.append(pid_handshake_type.ACK)
+    else:
+        ##----------------Data-Packet----------------------------------##
+        self.pid.append(pid_data_type.DATA0)
+        self.d_data_bytes = random.randint(0,self.DATA_MAX_BYTES)
+        self.d_data       = random.randint(0, 8*self.d_data_bytes)
+        # self.crc.append(self.calculate_crc())
+        ##----------------Acknowledgement-Packet-----------------------##
+        self.pid.append(pid_handshake_type.ACK)
+
+    # msg = "Randomized Data for transactions: 0x%0h", hex(self.pid)
+    # self.logger.info(msg)
 
 
   def __eq__(self, other):
@@ -54,7 +79,25 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
     msg = "Calculating CRC for Data: "
     self.logger.info(self.NAME + msg +str(self.d_data) + "CRC: " + str(self.d_crc._crc))
     return self.d_crc._crc
-  
+
+  def crc16(data: bytes):
+      xor_in = 0x0000  # initial value
+      xor_out = 0x0000  # final XOR value
+      poly = 0x8005  # generator polinom (normal form)
+
+      reg = xor_in
+      for octet in data:
+          # reflect in
+          for i in range(8):
+              topbit = reg & 0x8000
+              if octet & (0x80 >> i):
+                  topbit ^= 0x8000
+              reg <<= 1
+              if topbit:
+                  reg ^= poly
+          reg &= 0xFFFF
+          # reflect out
+      return reg ^ xor_out  
   # def __str__(self):
   #   return f"D_Data: 0x{self.d_data:x}"
 

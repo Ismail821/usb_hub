@@ -54,6 +54,7 @@ class USB_test_one(uvm_sequence):
     self.logger.info("ConfigDB retrieving Sequencers: Device_seqr_0")
     device_low_seqr   = ConfigDB().get(None, "", "Device_seqr_0")
     host_low_seq      = USB_low_seq("host_low_seq")
+    host_low_seq.host = 1
     device_seq0       = USB_low_seq("device_seq")
     self.logger.info("Starting host side lowspeed Sequence")
     host_low_seq_task      = cocotb.start_soon(host_low_seq.start(host_low_seqr))
@@ -109,6 +110,8 @@ class USB_hi_seq(uvm_sequence):
 
 class USB_low_seq(uvm_sequence):
 
+  host = 0
+
   def __init__(self, name):
     super().__init__(name=name)
     self.logger = logging.getLogger(name)
@@ -121,7 +124,7 @@ class USB_low_seq(uvm_sequence):
       low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_item"+str(i))
       self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
       await self.start_item(low_seq_item)
-      low_seq_item.randomize()
+      low_seq_item.randomize(host=self.host)
       self.logger.info("Sequence item randomized: TID: " + str(low_seq_item.transaction_id))
       self.logger.critical("Sequence finished sequence.start_item")
       await self.finish_item(low_seq_item)

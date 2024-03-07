@@ -1,0 +1,145 @@
+rm -f results.xml
+make -f makefile results.xml
+make[1]: Entering directory '/home/ismail/academics/usb_hub'
+rm -f results.xml
+MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
+         /usr/bin/vvp -M /home/ismail/.local/lib/python3.8/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build/sim.vvp -fst
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:76   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                   __init__.py:273  .._testbench_ Running on Icarus Verilog version 10.3 (stable)
+     0.00ns INFO     cocotb                   __init__.py:279  .._testbench_ Running tests with cocotb v1.8.1 from /home/ismail/.local/lib/python3.8/site-packages/cocotb
+     0.00ns INFO     cocotb                   __init__.py:299  .._testbench_ Seeding Python random module with 1709782812
+     0.00ns INFO     cocotb.regression      regression.py:154  __init__      Found test tests.USB_one_test
+     0.00ns INFO     cocotb.regression      regression.py:563  _start_test   running USB_one_test (1/1)
+
+
+--------------------------------START-OF-BUILD-PHASE---------------------------------------
+
+
+     0.00ns INFO     usb_base_test               tests.py:25   build_phase   Creating Main Sequence
+     0.00ns INFO     Usb_Env                       env.py:21   build_phase   ConfigDB Retrieved: Number of Devices for the test = 1
+     0.00ns INFO     Usb_Env                       env.py:23   build_phase   Creating all the sequencers and Registering it with ConfigDB
+     0.00ns INFO     Usb_Env                       env.py:31   build_phase   ConfigDB Registered: Host_low_seqr
+     0.00ns INFO     Usb_Env                       env.py:37   build_phase   ConfigDB Registered: Device_seqr_0
+     0.00ns INFO     uvc_agent               uvc_agent.py:28   build_phase   Creating Interface
+     0.00ns INFO     uvc_agent               uvc_agent.py:37   build_phase   Creating Low Speed Device Monitor Array
+     0.00ns INFO     uvc_agent               uvc_agent.py:44   build_phase   Creating Hi Speed Host Monitor 
+     0.00ns INFO     uvc_agent               uvc_agent.py:51   build_phase   Creating Low Speed Host Monitor
+     0.00ns INFO     uvc_agent               uvc_agent.py:59   build_phase   Creating Low Speed Device driver Array
+     0.00ns INFO     uvc_agent               uvc_agent.py:66   build_phase   Creating Hi Speed Host driver 
+     0.00ns INFO     device_drvr0           uvc_driver.py:67   build_phase   Creating Analysis portdevice_drvr0ap
+     0.00ns INFO     host_lowspeed_drvr     uvc_driver.py:122  build_phase   Creating Analysis porthost_lowspeed_drvrap
+     0.00ns INFO     Usb_Env                       env.py:47   connect_phase Starting Env Connect Phase
+     0.00ns INFO     Usb_Env                       env.py:48   connect_phase Connecting monitors with Scoreboard export's
+     0.00ns INFO     Usb_Env                       env.py:53   connect_phase Connecting drivers with Sequencer's export
+
+
+--------------------------------START-OF-CONNECT-PHASE---------------------------------------
+
+
+     0.00ns INFO     usb_base_test               tests.py:30   connect_phase usb test, in connect phase
+
+
+--------------------------------END-OF-ELABORATION-PHASE---------------------------------------
+
+
+     0.00ns INFO     usb_base_test               tests.py:35   ..ation_phase usb test, done with Elaboration phase
+
+
+--------------------------------START-OF-SIMULATION-PHASE---------------------------------------
+
+
+     0.00ns CRITICAL Usb_Env                       env.py:65   ..ation_phase Starting Generation of Clocks
+     0.00ns CRITICAL Usb_Env                       env.py:66   ..ation_phase Starting Clock generation
+     0.00ns CRITICAL Usb_Env                       env.py:67   ..ation_phase Starting Clock generation
+     0.00ns CRITICAL Usb_Env                       env.py:70   ..ation_phase Done Starting Generation of Clocks
+     0.00ns INFO     device_drvr0           uvc_driver.py:76   run_phase     Waiting for sequence item
+     0.00ns INFO     host_hispeed_drvr      uvc_driver.py:24   run_phase     Starting Hi speed Driver
+     0.00ns INFO     host_lowspeed_drvr     uvc_driver.py:131  run_phase     Waiting for sequence item
+     0.00ns INFO     uvc_agent               uvc_agent.py:77   run_phase     Starting Low Clock generation
+     0.00ns INFO     uvc_agent               uvc_agent.py:79   run_phase     Starting Hi Clock generation
+
+
+--------------------------------START-OF-RUN-PHASE---------------------------------------
+
+
+     0.00ns INFO     usb_base_test               tests.py:45   run_phase     Main Sequence Start
+     0.00ns INFO     uvc_agent               uvc_agent.py:84   ..e_low_clock Starting Clock generation
+     0.00ns INFO     uvc_agent               uvc_agent.py:90   ..te_hi_clock Starting Clock generation
+     0.00ns INFO     Main_Sequence            sequence.py:21   body          Starting Sequence
+     0.00ns INFO     Main_Sequence            sequence.py:23   body          ConfigDB Retrieved: Test_case = test_one
+     0.00ns INFO     Main_Sequence            sequence.py:24   body          Searching for Testcase :test_one
+     0.00ns CRITICAL Main_Sequence            sequence.py:28   body          Starting Matching Testcase sequence: test_one
+     0.00ns INFO     Main_Sequence            sequence.py:34   body          Body: Starting Sequence one_seq
+     0.00ns INFO     host_low_seq             sequence.py:122  body          Entering Body
+     0.00ns CRITICAL host_low_seq             sequence.py:125  body          Sequence Starting item "host_low_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f14362a88e0>
+     0.00ns INFO     device_seq               sequence.py:122  body          Entering Body
+     0.00ns CRITICAL device_seq               sequence.py:125  body          Sequence Starting item "device_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f14362a86d0>
+     0.00ns INFO     host_low_seq             sequence.py:128  body          Sequence item randomized: TID: 139724784830688
+     0.00ns CRITICAL host_low_seq             sequence.py:129  body          Sequence finished sequence.start_item
+     0.00ns INFO     device_seq               sequence.py:128  body          Sequence item randomized: TID: 139724784830160
+     0.00ns CRITICAL device_seq               sequence.py:129  body          Sequence finished sequence.start_item
+     0.00ns INFO     host_lowspeed_drvr     uvc_driver.py:133  run_phase     Received sequence item, Starting transaction
+     0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:144  ..ialize_port Initializing Port, Waiting for a Raising Edge of Clock
+     0.00ns INFO     device_drvr0           uvc_driver.py:78   run_phase     Received sequence item, Starting transaction
+     0.00ns DEBUG    device_drvr0           uvc_driver.py:89   ..ialize_port Initializing Port, Waiting for a Raising Edge of Clock
+     0.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 1
+     0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:146  ..ialize_port Setting Port to SE1
+     0.00ns DEBUG    device_drvr0           uvc_driver.py:91   ..ialize_port Setting Port to SE1
+   100.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 2
+   100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   100.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
+   200.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 3
+   200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   200.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
+   300.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 4
+   300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   300.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
+   400.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 5
+   400.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   400.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
+   500.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 6
+   500.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   500.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
+   600.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 7
+   600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   600.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
+   700.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 8
+   700.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   700.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
+   800.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 9
+   800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   800.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
+   900.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 10
+   900.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   900.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
+  1000.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 11
+  1000.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+  1000.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
+  1100.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 12
+  1100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+  1100.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
+  1200.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 13
+  1200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+  1200.00ns ERROR    ..t_driver.run_phase    scheduler.py:585  _unschedule   Exception raised by this forked coroutine
+  1201.00ns INFO     cocotb.regression      regression.py:484  ..test_failed USB_one_test failed
+                                                                             Traceback (most recent call last):
+                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 134, in run_phase
+                                                                                 await(self.start_transaction())
+                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 140, in start_transaction
+                                                                                 await self.start_pid_packet()
+                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 167, in start_pid_packet
+                                                                                 await self.drive_signal(self.low_item.pid[1], 8)
+                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 178, in drive_signal
+                                                                                 self.low_speed_if.dut.host_d_plus.value = ~data.value[i]
+                                                                             TypeError: 'int' object is not subscriptable
+  1201.00ns INFO     cocotb.regression      regression.py:700  ..est_summary **************************************************************************************
+                                                                             ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                                             **************************************************************************************
+                                                                             ** tests.USB_one_test             FAIL        1201.00           0.12      10192.26  **
+                                                                             **************************************************************************************
+                                                                             ** TESTS=1 PASS=0 FAIL=1 SKIP=0               1201.00           0.22       5439.28  **
+                                                                             **************************************************************************************
+                                                                             
+FST info: dumpfile sim_build/usb_hub_top.fst opened for output.
+make[1]: Leaving directory '/home/ismail/academics/usb_hub'
