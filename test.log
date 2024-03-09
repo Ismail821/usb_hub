@@ -1,6 +1,7 @@
 rm -f results.xml
 make -f makefile results.xml
 make[1]: Entering directory '/home/ismail/academics/usb_hub'
+/usr/bin/iverilog -o sim_build/sim.vvp -D COCOTB_SIM=1 -s usb_hub_top -f sim_build/cmds.f -g2012  -s cocotb_iverilog_dump  /home/ismail/academics/usb_hub/rtl/usb_hub_top.v sim_build/cocotb_iverilog_dump.v
 rm -f results.xml
 MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
          /usr/bin/vvp -M /home/ismail/.local/lib/python3.8/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build/sim.vvp -fst
@@ -8,7 +9,7 @@ MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
      -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
      0.00ns INFO     cocotb                   __init__.py:273  .._testbench_ Running on Icarus Verilog version 10.3 (stable)
      0.00ns INFO     cocotb                   __init__.py:279  .._testbench_ Running tests with cocotb v1.8.1 from /home/ismail/.local/lib/python3.8/site-packages/cocotb
-     0.00ns INFO     cocotb                   __init__.py:299  .._testbench_ Seeding Python random module with 1709782812
+     0.00ns INFO     cocotb                   __init__.py:299  .._testbench_ Seeding Python random module with 1709969618
      0.00ns INFO     cocotb.regression      regression.py:154  __init__      Found test tests.USB_one_test
      0.00ns INFO     cocotb.regression      regression.py:563  _start_test   running USB_one_test (1/1)
 
@@ -72,12 +73,12 @@ MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
      0.00ns CRITICAL Main_Sequence            sequence.py:28   body          Starting Matching Testcase sequence: test_one
      0.00ns INFO     Main_Sequence            sequence.py:34   body          Body: Starting Sequence one_seq
      0.00ns INFO     host_low_seq             sequence.py:122  body          Entering Body
-     0.00ns CRITICAL host_low_seq             sequence.py:125  body          Sequence Starting item "host_low_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f14362a88e0>
+     0.00ns CRITICAL host_low_seq             sequence.py:125  body          Sequence Starting item "host_low_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f9d986608e0>
      0.00ns INFO     device_seq               sequence.py:122  body          Entering Body
-     0.00ns CRITICAL device_seq               sequence.py:125  body          Sequence Starting item "device_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f14362a86d0>
-     0.00ns INFO     host_low_seq             sequence.py:128  body          Sequence item randomized: TID: 139724784830688
+     0.00ns CRITICAL device_seq               sequence.py:125  body          Sequence Starting item "device_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f9d986606d0>
+     0.00ns INFO     host_low_seq             sequence.py:128  body          Sequence item randomized: TID: 140314843416800
      0.00ns CRITICAL host_low_seq             sequence.py:129  body          Sequence finished sequence.start_item
-     0.00ns INFO     device_seq               sequence.py:128  body          Sequence item randomized: TID: 139724784830160
+     0.00ns INFO     device_seq               sequence.py:128  body          Sequence item randomized: TID: 140314843416272
      0.00ns CRITICAL device_seq               sequence.py:129  body          Sequence finished sequence.start_item
      0.00ns INFO     host_lowspeed_drvr     uvc_driver.py:133  run_phase     Received sequence item, Starting transaction
      0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:144  ..ialize_port Initializing Port, Waiting for a Raising Edge of Clock
@@ -136,9 +137,9 @@ MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
   1201.00ns INFO     cocotb.regression      regression.py:700  ..est_summary **************************************************************************************
                                                                              ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
                                                                              **************************************************************************************
-                                                                             ** tests.USB_one_test             FAIL        1201.00           0.12      10192.26  **
+                                                                             ** tests.USB_one_test             FAIL        1201.00           0.09      13060.47  **
                                                                              **************************************************************************************
-                                                                             ** TESTS=1 PASS=0 FAIL=1 SKIP=0               1201.00           0.22       5439.28  **
+                                                                             ** TESTS=1 PASS=0 FAIL=1 SKIP=0               1201.00           0.20       5942.22  **
                                                                              **************************************************************************************
                                                                              
 FST info: dumpfile sim_build/usb_hub_top.fst opened for output.
