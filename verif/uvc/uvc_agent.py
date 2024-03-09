@@ -95,5 +95,6 @@ class USB_uvc_agent (uvm_agent):
   async def count_clock(self):
     while True:
       await RisingEdge(self.uvc_if.dut.low_clock)
+      self.uvc_if.dut.cycle.value = self.cycle
       self.cycle += 1
       self.logger.debug(msg="Low Clock Advanced: Current cycle (Low clock) = "+str(self.cycle))

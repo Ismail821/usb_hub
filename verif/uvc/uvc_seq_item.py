@@ -10,15 +10,16 @@ import logging
 class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
 
   NAME = "[USB_lowspeed_Data_Sequence_item]"
-  DATA_MAX_BYTES  = 1024                #Usb 2.0 Spec Section 8.3.4 Says the Data Can by anywhere from 0 to 1024 Bytes
+  DATA_MAX_BYTES  = 10                #Usb 2.0 Spec Section 8.3.4 Says the Data Can by anywhere from 0 to 1024 Bytes
   CRC_POLYNOMIAL  = 0b1000000000000101
   CRC_REMAINDER   = 0b1000000000001101
   req_type        = 0
   address         = 0
-  data            = 0
   end_point       = 0
   pid             = []
   crc             = []
+  data            = 0
+  data_bytes      = 0
 
   def __init__(self, name):
     super().__init__(name)
@@ -31,6 +32,7 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   def randomize(self, host):
     if(host):
       self.req_type     = random.choice(list(request_type))
+      self.logger.warning("Choosen a Request of the Type" + self.req_type.name)
       if(self.req_type == request_type.WRITE):
         ##----------------Command-Packet-------------------------------##
         self.pid.append(pid_token_type.OUT)
@@ -39,8 +41,8 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
         # self.crc.append(self.calculate_crc())
         ##----------------Data-Packet----------------------------------##
         self.pid.append(pid_data_type.DATA0)
-        self.d_data_bytes = random.randint(0,self.DATA_MAX_BYTES)
-        self.d_data       = random.randint(0, 8*self.d_data_bytes)
+        self.data_bytes   = random.randint(0,self.DATA_MAX_BYTES)
+        self.data         = random.randint(0, 2**self.data_bytes)
   
       elif(self.req_type == request_type.READ):
         ##----------------Command-Packet-------------------------------##
@@ -53,8 +55,8 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
     else:
         ##----------------Data-Packet----------------------------------##
         self.pid.append(pid_data_type.DATA0)
-        self.d_data_bytes = random.randint(0,self.DATA_MAX_BYTES)
-        self.d_data       = random.randint(0, 8*self.d_data_bytes)
+        self.data_bytes = random.randint(0,self.DATA_MAX_BYTES)
+        self.d_data       = random.randint(0, 8*self.data_bytes)
         # self.crc.append(self.calculate_crc())
         ##----------------Acknowledgement-Packet-----------------------##
         self.pid.append(pid_handshake_type.ACK)
@@ -108,7 +110,7 @@ class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):
   logger.setLevel(logging.DEBUG)
 
   NAME = "[USB_hispeed_Data_Sequence_item]"
-  DATA_MAX_BYTES  = 1024
+  DATA_MAX_BYTES  = 10
   CRC_POLYNOMIAL  = 0b1000000000000101
   CRC_REMAINDER   = 0b1000000000001101
   ADDRESS_SIZE    = 8
@@ -131,8 +133,8 @@ class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):
     self.address      = random.randint(0, self.ADDRESS_MAX)
     self.subType      = random.randint(0, self.SUBTYPE_MAX)
     self.stream_id    = random.randint(0, self.STREAM_ID_MAX)
-    self.d_data_bytes = random.randint(0,1024)
-    self.d_data       = random.randint(0, self.d_data_bytes)
+    self.data_bytes = random.randint(0,1024)
+    self.d_data       = random.randint(0, self.data_bytes)
     self.packet_crc   = crcmod.mkCrcFun() ##Need to check the proper input outputs for the function
     self.logger.info("Randomized Transactions")
 
@@ -142,7 +144,7 @@ class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):
       self.logger.info(self.NAME + msg +str(self.d_data))
     else:
       msg  = "Data Comparision Failed Actual: "
-      self.logger.erro
+      self.logger.error("")
     return 
 
   def calculate_crc(self):

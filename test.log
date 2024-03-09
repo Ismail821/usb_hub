@@ -9,7 +9,7 @@ MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
      -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
      0.00ns INFO     cocotb                   __init__.py:273  .._testbench_ Running on Icarus Verilog version 10.3 (stable)
      0.00ns INFO     cocotb                   __init__.py:279  .._testbench_ Running tests with cocotb v1.8.1 from /home/ismail/.local/lib/python3.8/site-packages/cocotb
-     0.00ns INFO     cocotb                   __init__.py:299  .._testbench_ Seeding Python random module with 1709969618
+     0.00ns INFO     cocotb                   __init__.py:299  .._testbench_ Seeding Python random module with 1709969528
      0.00ns INFO     cocotb.regression      regression.py:154  __init__      Found test tests.USB_one_test
      0.00ns INFO     cocotb.regression      regression.py:563  _start_test   running USB_one_test (1/1)
 
@@ -73,73 +73,133 @@ MODULE=tests TESTCASE= TOPLEVEL=usb_hub_top TOPLEVEL_LANG=verilog \
      0.00ns CRITICAL Main_Sequence            sequence.py:28   body          Starting Matching Testcase sequence: test_one
      0.00ns INFO     Main_Sequence            sequence.py:34   body          Body: Starting Sequence one_seq
      0.00ns INFO     host_low_seq             sequence.py:122  body          Entering Body
-     0.00ns CRITICAL host_low_seq             sequence.py:125  body          Sequence Starting item "host_low_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f9d986608e0>
+     0.00ns CRITICAL host_low_seq             sequence.py:125  body          Sequence Starting item "host_low_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f17dc2d0ac0>
+     0.00ns WARNING  host_low_seq_item0   uvc_seq_item.py:35   randomize     Choosen a Request of the TypeREAD
      0.00ns INFO     device_seq               sequence.py:122  body          Entering Body
-     0.00ns CRITICAL device_seq               sequence.py:125  body          Sequence Starting item "device_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f9d986606d0>
-     0.00ns INFO     host_low_seq             sequence.py:128  body          Sequence item randomized: TID: 140314843416800
+     0.00ns CRITICAL device_seq               sequence.py:125  body          Sequence Starting item "device_seq_item0" <verif.uvc.uvc_seq_item.USB_Lowspeed_Data_Seq_Item object at 0x7f17dc2d0880>
+     0.00ns INFO     host_low_seq             sequence.py:128  body          Sequence item randomized: TID: 139740454914752
      0.00ns CRITICAL host_low_seq             sequence.py:129  body          Sequence finished sequence.start_item
-     0.00ns INFO     device_seq               sequence.py:128  body          Sequence item randomized: TID: 140314843416272
+     0.00ns INFO     device_seq               sequence.py:128  body          Sequence item randomized: TID: 139740454914176
      0.00ns CRITICAL device_seq               sequence.py:129  body          Sequence finished sequence.start_item
      0.00ns INFO     host_lowspeed_drvr     uvc_driver.py:133  run_phase     Received sequence item, Starting transaction
-     0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:144  ..ialize_port Initializing Port, Waiting for a Raising Edge of Clock
+     0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:153  ..ialize_port Initializing Port, Waiting for a Raising Edge of Clock
      0.00ns INFO     device_drvr0           uvc_driver.py:78   run_phase     Received sequence item, Starting transaction
      0.00ns DEBUG    device_drvr0           uvc_driver.py:89   ..ialize_port Initializing Port, Waiting for a Raising Edge of Clock
-     0.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 1
-     0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:146  ..ialize_port Setting Port to SE1
+     0.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 1
+     0.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:155  ..ialize_port Setting Port to SE1
      0.00ns DEBUG    device_drvr0           uvc_driver.py:91   ..ialize_port Setting Port to SE1
-   100.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 2
-   100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   100.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 2
+   100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:164  sync_packets  Driving J in Low_clock
    100.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
-   200.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 3
-   200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   200.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 3
+   200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:168  sync_packets  Driving k in Low_clock
    200.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
-   300.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 4
-   300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   300.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 4
+   300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:164  sync_packets  Driving J in Low_clock
    300.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
-   400.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 5
-   400.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   400.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 5
+   400.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:168  sync_packets  Driving k in Low_clock
    400.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
-   500.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 6
-   500.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   500.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 6
+   500.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:164  sync_packets  Driving J in Low_clock
    500.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
-   600.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 7
-   600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   600.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 7
+   600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:168  sync_packets  Driving k in Low_clock
    600.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
-   700.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 8
-   700.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   700.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 8
+   700.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:164  sync_packets  Driving J in Low_clock
    700.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
-   800.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 9
-   800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+   800.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 9
+   800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:168  sync_packets  Driving k in Low_clock
    800.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
-   900.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 10
-   900.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+   900.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 10
+   900.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:164  sync_packets  Driving J in Low_clock
    900.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
-  1000.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 11
-  1000.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
+  1000.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 11
+  1000.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:168  sync_packets  Driving k in Low_clock
   1000.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
-  1100.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 12
-  1100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:154  sync_packets  Driving J in Low_clock
+  1100.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 12
+  1100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:164  sync_packets  Driving J in Low_clock
   1100.00ns DEBUG    device_drvr0           uvc_driver.py:100  sync_packets  Driving J in Low_clock
-  1200.00ns DEBUG    uvc_agent               uvc_agent.py:99   count_clock   Low Clock Advanced: Current cycle (Low clock) = 13
-  1200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:158  sync_packets  Driving k in Low_clock
-  1200.00ns ERROR    ..t_driver.run_phase    scheduler.py:585  _unschedule   Exception raised by this forked coroutine
-  1201.00ns INFO     cocotb.regression      regression.py:484  ..test_failed USB_one_test failed
+  1200.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 13
+  1200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:168  sync_packets  Driving k in Low_clock
+  1200.00ns DEBUG    device_drvr0           uvc_driver.py:104  sync_packets  Driving k in Low_clock
+  1200.00ns INFO     device_drvr0           uvc_driver.py:76   run_phase     Waiting for sequence item
+  1200.00ns INFO     device_seq               sequence.py:132  body          Sequence item Sent: 139740454914176
+  1200.00ns INFO     device_seq               sequence.py:133  body          Done generating sequence loops
+  1300.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 14
+  1300.00ns INFO     host_lowspeed_drvr     uvc_driver.py:147  ..transaction Drive a request of type READ
+  1300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:173  ..oken_packet Starting driving PID Bits
+  1300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [0]False
+  1400.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 15
+  1400.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [1]True
+  1500.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 16
+  1500.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [2]False
+  1600.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 17
+  1600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [3]False
+  1700.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 18
+  1700.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [4]False
+  1800.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 19
+  1800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [5]False
+  1900.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 20
+  1900.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [6]False
+  2000.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 21
+  2000.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [7]False
+  2100.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 22
+  2100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:175  ..oken_packet done with driving PID Bits
+  2100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:177  ..oken_packet Starting driving Address Bits 
+  2100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [0]True
+  2200.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 23
+  2200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [1]False
+  2300.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 24
+  2300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [2]True
+  2400.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 25
+  2400.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [3]True
+  2500.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 26
+  2500.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [4]False
+  2600.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 27
+  2600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [5]True
+  2700.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 28
+  2700.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [6]True
+  2800.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 29
+  2800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:179  ..oken_packet done with driving Address Bits
+  2800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:193  ..data_packet Starting driving PID Bits
+  2800.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [0]True
+  2900.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 30
+  2900.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [1]True
+  3000.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 31
+  3000.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [2]False
+  3100.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 32
+  3100.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [3]False
+  3200.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 33
+  3200.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [4]False
+  3300.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 34
+  3300.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [5]False
+  3400.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 35
+  3400.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [6]False
+  3500.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 36
+  3500.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:211  drive_signal  Starting to drive signal bit [7]False
+  3600.00ns DEBUG    uvc_agent               uvc_agent.py:100  count_clock   Low Clock Advanced: Current cycle (Low clock) = 37
+  3600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:196  ..data_packet done with driving PID Bits
+  3600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:199  ..data_packet Starting driving Data Bits 
+  3600.00ns DEBUG    host_lowspeed_drvr     uvc_driver.py:201  ..data_packet done with driving Data Bits
+  3600.00ns INFO     host_lowspeed_drvr     uvc_driver.py:131  run_phase     Waiting for sequence item
+  3600.00ns INFO     host_low_seq             sequence.py:132  body          Sequence item Sent: 139740454914752
+  3600.00ns INFO     host_low_seq             sequence.py:133  body          Done generating sequence loops
+  3600.00ns CRITICAL Main_Sequence            sequence.py:36   body          Main sequence Ended
+  3600.00ns INFO     usb_base_test               tests.py:48   run_phase     Main Sequence excecution Finished Waiting 1 second
+  3600.00ns ERROR    ..ase_test.run_phase    scheduler.py:585  _unschedule   Exception raised by this forked coroutine
+  3601.00ns INFO     cocotb.regression      regression.py:484  ..test_failed USB_one_test failed
                                                                              Traceback (most recent call last):
-                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 134, in run_phase
-                                                                                 await(self.start_transaction())
-                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 140, in start_transaction
-                                                                                 await self.start_pid_packet()
-                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 167, in start_pid_packet
-                                                                                 await self.drive_signal(self.low_item.pid[1], 8)
-                                                                               File "/home/ismail/academics/usb_hub/verif/uvc/uvc_driver.py", line 178, in drive_signal
-                                                                                 self.low_speed_if.dut.host_d_plus.value = ~data.value[i]
-                                                                             TypeError: 'int' object is not subscriptable
-  1201.00ns INFO     cocotb.regression      regression.py:700  ..est_summary **************************************************************************************
+                                                                               File "/home/ismail/academics/usb_hub/tests.py", line 50, in run_phase
+                                                                                 self.end_test
+                                                                             AttributeError: 'USB_one_test' object has no attribute 'end_test'
+  3601.00ns INFO     cocotb.regression      regression.py:700  ..est_summary **************************************************************************************
                                                                              ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
                                                                              **************************************************************************************
-                                                                             ** tests.USB_one_test             FAIL        1201.00           0.09      13060.47  **
+                                                                             ** tests.USB_one_test             FAIL        3601.00           0.29      12515.38  **
                                                                              **************************************************************************************
-                                                                             ** TESTS=1 PASS=0 FAIL=1 SKIP=0               1201.00           0.20       5942.22  **
+                                                                             ** TESTS=1 PASS=0 FAIL=1 SKIP=0               3601.00           0.39       9210.64  **
                                                                              **************************************************************************************
                                                                              
 FST info: dumpfile sim_build/usb_hub_top.fst opened for output.

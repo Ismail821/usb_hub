@@ -10,7 +10,11 @@ module usb_hub_top #(
   input  wire host_rx_plus,
   input  wire host_rx_minus,
   inout  wire [NUM_USB_DEVICES-1:0] device_d_plus,
-  inout  wire [NUM_USB_DEVICES-1:0] device_d_minus
+  inout  wire [NUM_USB_DEVICES-1:0] device_d_minus,
+
+  //======Debug Signals, Doesn't have any Functional useage but very helpful in Debug======
+  input  wire [63:00] cycle,
+  input  wire [03:00] packet_state
 );
   
 //This Top Module shall serve as the outer most RTL module which shall have all other submodules

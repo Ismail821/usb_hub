@@ -47,6 +47,7 @@ class USB_base_test(uvm_test):
     await(cocotb.start_soon(self.main_seq.start()))
     self.logger.info("Main Sequence excecution Finished Waiting 1 second")
     self.drop_objection()
+    self.end_test
 
 @pyuvm.test()
 class USB_one_test(USB_base_test):
