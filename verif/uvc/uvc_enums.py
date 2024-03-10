@@ -36,6 +36,7 @@ class pid_special_type(Enum):
   PING  = 0b0100
 
 class DEBUG_PACKET(Enum):
+  DONE            = 0b0000
   SYNC_PACKET     = 0b0001
   TOKEN_PKT_WRITE = 0b0010
   TOKEN_PKT_READ  = 0b0011

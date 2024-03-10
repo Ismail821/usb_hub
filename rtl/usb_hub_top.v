@@ -14,7 +14,8 @@ module usb_hub_top #(
 
   //======Debug Signals, Doesn't have any Functional useage but very helpful in Debug======
   input  wire [63:00] cycle,
-  input  wire [03:00] packet_state
+  input  wire [03:00] host_low_packet_state,
+  input  wire [(NUM_USB_DEVICES*4)-1:00] dev_low_packet_state 
 );
   
 //This Top Module shall serve as the outer most RTL module which shall have all other submodules

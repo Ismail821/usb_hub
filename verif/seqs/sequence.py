@@ -1,12 +1,13 @@
-from cocotb.triggers import Join, Combine
+from cocotb.triggers import Join, Combine, RisingEdge, FallingEdge
 from pyuvm import uvm_sequence
 from pyuvm import ConfigDB
-from cocotb import simulator 
+import random
 import cocotb
 import pyuvm
 import logging
 from verif.uvc.uvc_seq_item import USB_Lowspeed_Data_Seq_Item
 from verif.uvc.uvc_seq_item import USB_Hispeed_Data_Seq_Item
+from verif.uvc.uvc_seqs     import uvc_sequence
 
 class USB_main_seq(uvm_sequence):
   """
@@ -108,10 +109,9 @@ class USB_hi_seq(uvm_sequence):
       self.logger.info("Sequence item Sent: %s", hi_seq_item.transaction_id)
     self.logger.info("Done generating sequence loops")
 
-class USB_low_seq(uvm_sequence):
+class USB_low_seq(uvc_sequence):
 
-  host = 0
-
+  host = 1
   def __init__(self, name):
     super().__init__(name=name)
     self.logger = logging.getLogger(name)
@@ -120,15 +120,18 @@ class USB_low_seq(uvm_sequence):
 
   async def body(self):
     self.logger.info("Entering Body")
-    for i in range(1):
-      low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_item"+str(i))
-      self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
-      low_seq_item.randomize(host=self.host)
-      await self.start_item(low_seq_item)
-      self.logger.info("Sequence item randomized: TID: " + str(low_seq_item.transaction_id))
-      self.logger.critical("Sequence finished sequence.start_item")
-      await self.finish_item(low_seq_item)
-      # self.get_response()
-      self.logger.info("Sequence item Sent: " + str(low_seq_item.transaction_id))
-    self.logger.info("Done generating sequence loops")
+    if(self.host==1):
+      for i in range(10):
+        low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_item"+str(i))
+        self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
+        low_seq_item.randomize(host=self.host)
+        await self.start_item(low_seq_item)
+        self.logger.info("Sequence item randomized: TID: " + str(low_seq_item.transaction_id))
+        self.logger.critical("Sequence finished sequence.start_item")
+        await self.finish_item(low_seq_item)
+        # self.get_response()
+        self.logger.info("Sequence item Sent: " + str(low_seq_item.transaction_id))
+        self.logger.debug("Waiting for a Random amount of time")
+        await self.wait_low_clock(random.randint(5,20))
+      self.logger.info("Done generating sequence loops")
 

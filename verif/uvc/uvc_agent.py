@@ -54,7 +54,7 @@ class USB_uvc_agent (uvm_agent):
                                               uvc_cfg     = self.uvc_cfg,
                                               parent      = self,
                                               lowspeed_if = self.uvc_if.device_if_a[i],
-                                              i           = i-1
+                                              i           = i
                                             ) for i in range (self.uvc_cfg.number_of_devices)]
     self.logger.info(msg="Creating Low Speed Device driver Array")
     self.host_hi_drvr   = USB_hispeed_driver( name        = "host_hispeed_drvr",
@@ -82,13 +82,13 @@ class USB_uvc_agent (uvm_agent):
 
   async def generate_low_clock(self):
     self.logger.info(msg="Starting Clock generation")
-    self.uvc_if.dut.low_clock = 0
+    self.uvc_if.dut.low_clock.value = 0
     self.low_clock = self.uvc_if.dut.low_clock
     cocotb.start_soon(Clock(self.uvc_if.dut.hi_clock, 10, 'step').start())
 
   async def generate_hi_clock(self):
     self.logger.info(msg="Starting Clock generation")
-    self.uvc_if.dut.hi_clock = 0
+    self.uvc_if.dut.hi_clock.value = 0
     self.hi_clock = self.uvc_if.dut.hi_clock
     cocotb.start_soon(Clock(self.uvc_if.dut.low_clock, 100, 'step').start())
 
