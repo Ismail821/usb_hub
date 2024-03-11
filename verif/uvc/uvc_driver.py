@@ -107,12 +107,12 @@ class USB_lowspeed_device_driver(uvm_driver):
     for i in range (6):
       await RisingEdge(self.low_speed_if.dut.low_clock)
       self.logger.debug("Driving J in Low_clock")
-      self.low_speed_if.dut.device_d_minus.value  = 0
-      self.low_speed_if.dut.device_d_plus.value   = 1
+      self.low_speed_if.dut.device_d_minus.value[0]  = 0
+      self.low_speed_if.dut.device_d_plus.value[0]   = 1
       await RisingEdge(self.low_speed_if.dut.low_clock)
       self.logger.debug("Driving k in Low_clock")
-      self.low_speed_if.dut.device_d_minus.value  = 1
-      self.low_speed_if.dut.device_d_plus.value   = 0
+      self.low_speed_if.dut.device_d_minus.value[0]  = 1
+      self.low_speed_if.dut.device_d_plus.value[0]   = 0
 
   async def start_token_packet(self):
     self.logger.debug("Starting driving PID Bits")
@@ -150,16 +150,21 @@ class USB_lowspeed_device_driver(uvm_driver):
       int(value)
       str(value)
       # self.logger.debug("Get Bits: ", value)
-      return ((value >> n & 1) != 0)
+      return ((value >> n & 1))
 
+    value = value | 0xFF
+    value = value & 0x01
     for i in range (no_bits):
-      self.logger.debug("Starting to drive signal bit ["+ str(i) + "]" + str(get_bit(data, i)))
+      self.logger.debug("Starting to drive signal bit ["+ str(i) + "] = " + str(get_bit(data, i)))
       if(get_bit(data, i)):
-        self.low_speed_if.dut.device_d_plus.value    =  get_bit(self.low_speed_if.dut.device_d_plus.value[self.device_array],  0) & 1
-        self.low_speed_if.dut.device_d_minus.value   =  get_bit(self.low_speed_if.dut.device_d_minus.value[self.device_array], 0) & 1
+        self.logger.debug(str(get_bit(self.low_speed_if.dut.device_d_plus.value[self.device_array],  0)))
+        self.logger.debug("Device num = " + str(self.device_array))
+        self.low_speed_if.dut.device_d_plus.value[self.device_array]    =  get_bit(self.low_speed_if.dut.device_d_plus.value[self.device_array],  0) & 1
+        self.low_speed_if.dut.device_d_minus.value[self.device_array]   =  get_bit(self.low_speed_if.dut.device_d_minus.value[self.device_array], 0) & 1
       else:
-        self.low_speed_if.dut.device_d_plus.value    = ~get_bit(self.low_speed_if.dut.device_d_plus.value[self.device_array],  0) & 1
-        self.low_speed_if.dut.device_d_minus.value   = ~get_bit(self.low_speed_if.dut.device_d_minus.value[self.device_array], 0) & 1
+        self.logger.debug(str(get_bit(self.low_speed_if.dut.device_d_plus.value[self.device_array],  0)))
+        self.low_speed_if.dut.device_d_plus.value[self.device_array]    = ~get_bit(self.low_speed_if.dut.device_d_plus.value[self.device_array],  0) & 1
+        self.low_speed_if.dut.device_d_minus.value[self.device_array]   = ~get_bit(self.low_speed_if.dut.device_d_minus.value[self.device_array], 0) & 1
       await RisingEdge(self.low_speed_if.dut.low_clock)
 
 class USB_lowspeed_host_driver(uvm_driver):
