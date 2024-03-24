@@ -10,14 +10,15 @@ class USB_Scoreboard(uvm_component):
   def build_phase(self):
     self.host_hi_fifo       = uvm_tlm_analysis_fifo("host_hi_fifo", self)
     self.host_low_fifo      = uvm_tlm_analysis_fifo("host_low_fifo", self)
+    self.number_of_devices  = int(ConfigDB().get(None, "", "number_of_devices"))
     self.device_fifo_a      = [ uvm_tlm_analysis_fifo("device_fifo_"+str(i), self)
-                                for i in range (ConfigDB().get(None, "", "number_of_devices"))]
+                                for i in range (self.number_of_devices)]
     # self.cmd_get_port       = uvm_get_port("cmd_get_port", self)
     # self.result_get_port    = uvm_get_port("result_get_port", self)
     self.host_hi_export     = self.host_hi_fifo.analysis_export
     self.host_low_export    = self.host_low_fifo.analysis_export
     self.device_export_a    = [ self.device_fifo_a[i].analysis_export 
-                              for i in range (ConfigDB().get(None, "", "number_of_devices")) ]
+                              for i in range (self.number_of_devices) ]
 
   # def connect_phase(self):
   #   self.cmd_get_port.connect(self.cmd_fifo.get_export)

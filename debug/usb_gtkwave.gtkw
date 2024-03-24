@@ -1,0 +1,56 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Sun Mar 24 17:47:15 2024
+[*]
+[dumpfile] "/home/ismail/academics/usb_hub/sim_build/usb_hub_top.fst"
+[dumpfile_mtime] "Sun Mar 24 17:39:41 2024"
+[dumpfile_size] 971
+[savefile] "/home/ismail/academics/usb_hub/debug/usb_gtkwave.gtkw"
+[timestart] 0
+[size] 1908 993
+[pos] -1 -1
+*-9.614269 1300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 214
+[signals_width] 250
+[sst_expanded] 1
+[sst_vpaned_height] 166
+@200
+-Clocks and Cycle
+@24
+usb_hub_top.cycle[63:0]
+@28
+usb_hub_top.low_clock
+@200
+-Host Signals
+@800200
+-Host Signals
+@28
+usb_hub_top.host_d_plus
+usb_hub_top.host_d_minus
+@2028
+^1 /home/ismail/academics/usb_hub/debug/debug_state.txt
+usb_hub_top.host_low_packet_state[3:0]
+@1000200
+-Host Signals
+@200
+-====Device Signals====
+@800200
+-Device Signals
+-Device 0
+@28
+(1)usb_hub_top.device_d_plus[1:0]
+(1)usb_hub_top.device_d_minus[1:0]
+@1000200
+-Device 0
+@800200
+-Device 1
+@28
+(0)usb_hub_top.device_d_plus[1:0]
+(0)usb_hub_top.device_d_minus[1:0]
+@1000200
+-Device 1
+-Device Signals
+@22
+usb_hub_top.dev_low_packet_state[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

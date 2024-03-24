@@ -1,6 +1,6 @@
 sim_build/*
 *.temp
-
+test.log
 results.xml
 __pycache__
 launch.json

@@ -1,5 +1,5 @@
 module usb_hub_top #(
-  parameter NUM_USB_DEVICES = 1
+  parameter NUM_USB_DEVICES = 2
 ) (
   input  wire hi_clock,
   input  wire low_clock,

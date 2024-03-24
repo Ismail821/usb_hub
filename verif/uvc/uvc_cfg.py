@@ -6,7 +6,7 @@ class USB_uvc_cfg (uvm_object):
   device_address_list = []
 
   def __init__(self, name):
-    self.number_of_devices = ConfigDB().get(None, "", "number_of_devices")
+    self.number_of_devices = int(ConfigDB().get(None, "", "number_of_devices"))
     self.choose_device_address()
     super().__init__(name=name)
   

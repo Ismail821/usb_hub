@@ -32,7 +32,7 @@ class USB_uvc_agent (uvm_agent):
                                               uvc_cfg     = self.uvc_cfg,
                                               parent      = self,
                                               low_clock   = self.low_clock,
-                                              lowspeed_if = self.uvc_if.device_if_a[i]
+                                              lowspeed_if = self.uvc_if.device_if
                                             ) for i in range (self.uvc_cfg.number_of_devices)]
     self.logger.info(msg="Creating Low Speed Device Monitor Array")
     self.host_hi_mon   = USB_Hispeed_Monitor( name        = "host_hispeed_mon",
@@ -53,7 +53,7 @@ class USB_uvc_agent (uvm_agent):
     self.device_drvr_a  = [USB_lowspeed_device_driver( name      ="device_drvr"+str(i), 
                                               uvc_cfg     = self.uvc_cfg,
                                               parent      = self,
-                                              lowspeed_if = self.uvc_if.device_if_a[i],
+                                              lowspeed_if = self.uvc_if.device_if,
                                               i           = i
                                             ) for i in range (self.uvc_cfg.number_of_devices)]
     self.logger.info(msg="Creating Low Speed Device driver Array")

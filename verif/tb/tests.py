@@ -49,7 +49,7 @@ class USB_base_test(uvm_test):
     self.drop_objection()
     self.end_test
 
-@pyuvm.test()
+# @pyuvm.test()
 class USB_one_test(USB_base_test):
       
   def __init__(self, name, parent):
@@ -66,6 +66,29 @@ class USB_one_test(USB_base_test):
   def end_of_elaboration_phase(self):
     ConfigDB().set(None,"", "Test_case", "test_one")
     logger.info("End_of_Elab_Phase: ConfigDB Registering Testcase name")
+    super().end_of_elaboration_phase()
+
+  def run_phase(self):
+    return super().run_phase()
+
+@pyuvm.test()
+class USB_all_test(USB_base_test):
+      
+  def __init__(self, name, parent):
+    name   = "usb_all_test"
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    super().__init__(name, parent)
+
+  def build_phase(self):
+    no_of_devices = cocotb.top.NUM_USB_DEVICES
+    ConfigDB().set(None, "", "number_of_devices", no_of_devices)
+    logger.info("Build_Phase: ConfigDB - Number of Devices for the test = %s", str(no_of_devices))
+    return super().build_phase()
+
+  def end_of_elaboration_phase(self):
+    ConfigDB().set(None,"", "Test_case", "test_all")
+    logger.info("End_of_Elab_Phase: ConfigDB Registering Testcase name: test_all")
     super().end_of_elaboration_phase()
 
   def run_phase(self):

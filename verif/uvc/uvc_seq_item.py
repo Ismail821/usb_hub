@@ -20,6 +20,7 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   crc             = []
   data            = 0
   data_bytes      = 0
+  device_number   = 0
 
   def __init__(self, name):
     super().__init__(name)
@@ -135,7 +136,7 @@ class USB_Hispeed_Data_Seq_Item(uvm_sequence_item):
     self.stream_id    = random.randint(0, self.STREAM_ID_MAX)
     self.data_bytes = random.randint(0,1024)
     self.d_data       = random.randint(0, self.data_bytes)
-    self.packet_crc   = crcmod.mkCrcFun() ##Need to check the proper input outputs for the function
+    # self.packet_crc   = crcmod.mkCrcFun() ##Need to check the proper input outputs for the function
     self.logger.info("Randomized Transactions")
 
   def __eq__(self, other):
