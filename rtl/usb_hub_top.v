@@ -1,3 +1,7 @@
+`include "rtl/includes.v"
+
+`define DEV_RANGE `WIDTH_TO_RANGE(NUM_USB_DEVICES)
+
 module usb_hub_top #(
   parameter NUM_USB_DEVICES = 2
 ) (
@@ -9,8 +13,8 @@ module usb_hub_top #(
   output wire host_tx_minus,
   input  wire host_rx_plus,
   input  wire host_rx_minus,
-  inout  wire [NUM_USB_DEVICES-1:0] device_d_plus,
-  inout  wire [NUM_USB_DEVICES-1:0] device_d_minus,
+  inout  wire [`DEV_RANGE] device_d_plus,
+  inout  wire [`DEV_RANGE] device_d_minus,
 
   //======Debug Signals, Doesn't have any Functional useage but very helpful in Debug======
   input  wire [63:00] cycle,
