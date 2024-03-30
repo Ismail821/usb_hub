@@ -15,6 +15,7 @@ class USB_Lowspeed_If():
 
   d_plus   = 0
   d_minus  = 0
+  device_state = 0
 
   def __init__(self, name, Dut):
     self.dut      = Dut
