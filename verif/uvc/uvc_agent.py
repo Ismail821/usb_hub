@@ -8,9 +8,9 @@ from cocotb.triggers import RisingEdge
 from verif.uvc.uvc_if import USB_uvc_if
 from verif.uvc.uvc_monitor import USB_Hispeed_Monitor
 from verif.uvc.uvc_monitor import USB_Lowspeed_Monitor
-from verif.uvc.uvc_driver  import USB_hispeed_driver
-from verif.uvc.uvc_driver  import USB_lowspeed_host_driver
-from verif.uvc.uvc_driver  import USB_lowspeed_device_driver
+from verif.uvc.usb_host_driver  import USB_hispeed_driver
+from verif.uvc.usb_host_driver  import USB_lowspeed_host_driver
+from verif.uvc.uvc_device_driver  import USB_lowspeed_device_driver
 
 class USB_uvc_agent (uvm_agent):
   uvc_cfg   = None
