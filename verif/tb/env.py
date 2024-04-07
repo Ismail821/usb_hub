@@ -79,7 +79,6 @@ class USB_env(uvm_env):
 
   async def run_phase(self):
     self.count_cycles()
-    super().run_phase()
 
   async def count_cycles(self):
     while True:

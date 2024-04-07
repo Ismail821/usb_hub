@@ -47,7 +47,6 @@ class USB_lowspeed_device_driver(uvm_driver):
       self.low_speed_if.dut.dev_low_packet_state.value = self.low_speed_if.device_state
       await self.start_token_packet()
       await self.start_data_packet()
-      self.low_speed_if.dut.dev_low_packet_state.value = DEBUG_PACKET.DONE.value
       self.low_speed_if.device_state = self.low_speed_if.device_state | (DEBUG_PACKET.DONE.value << self.low_item.device_number*4)
       self.low_speed_if.dut.dev_low_packet_state.value = self.low_speed_if.device_state
     else:

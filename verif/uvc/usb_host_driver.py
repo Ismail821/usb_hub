@@ -4,6 +4,7 @@ from pyuvm import uvm_analysis_port
 from pyuvm import UVMError
 from verif.uvc.uvc_seq_item import USB_Hispeed_Data_Seq_Item, USB_Lowspeed_Data_Seq_Item
 import logging
+import cocotb
 from verif.uvc.uvc_enums import *
 
 class USB_hispeed_driver(uvm_driver):
@@ -23,12 +24,12 @@ class USB_hispeed_driver(uvm_driver):
 
   async def run_phase(self):
     self.logger.info("Starting Hi speed Driver")
-    # while True:
-    #   # self.hi_item = USB_Hispeed_Data_Seq_Item("Driver_hi_item")
-    #   self.logger.info("Waiting for sequence item")
-    #   self.hi_item = await self.seq_item_port.get_next_item()
-    #   self.logger.info("Received sequence item, Starting transaction")
-    #   self.start_transaction()
+    while True:
+      # self.hi_item = USB_Hispeed_Data_Seq_Item("Driver_hi_item")
+      self.logger.info("Waiting for sequence item")
+      self.hi_item = await self.seq_item_port.get_next_item()
+      self.logger.info("Received sequence item, Starting transaction")
+      self.start_transaction()
 
   async def start_transaction(self):
     await self.initialize_port()
@@ -74,7 +75,12 @@ class USB_lowspeed_host_driver(uvm_driver):
       self.hi_item = USB_Lowspeed_Data_Seq_Item("Driver_hi_item")
       self.logger.info("Waiting for sequence item")
       self.hi_item = await self.seq_item_port.get_next_item()
-      self.logger.info("Received sequence item with TID = 0x%0x, %s",   self.hi_item.transaction_id, vars(self.hi_item))
+      if((self.hi_item is USB_Lowspeed_Data_Seq_Item)):
+        self.logger.error("Received a sequence item not of the Type USB_Lowspeed_Data_Sequence_item")
+        self.logger.error("%s", vars(self.hi_item))
+        raise Exception
+        # cocotb.raise.ValueError()
+      self.logger.info("Received sequence item with TID = %0d, %s",   self.hi_item.transaction_id, vars(self.hi_item))
       await(self.start_transaction())
       self.seq_item_port.item_done()
 

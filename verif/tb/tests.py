@@ -1,4 +1,6 @@
-from cocotb.triggers import Join, Combine
+from cocotb.triggers import Join
+from cocotb.result import TestSuccess
+from cocotb.result import TestComplete
 from verif.seqs.sequence import USB_main_seq
 from verif.tb.env import USB_env
 from pyuvm import *
@@ -47,6 +49,8 @@ class USB_base_test(uvm_test):
     await(cocotb.start_soon(self.main_seq.start()))
     self.logger.info("Main Sequence excecution Finished Waiting 1 second")
     self.drop_objection()
+    TestSuccess()
+    TestComplete()
     self.end_test
 
 # @pyuvm.test()
@@ -90,6 +94,3 @@ class USB_all_test(USB_base_test):
     ConfigDB().set(None,"", "Test_case", "test_all")
     logger.info("End_of_Elab_Phase: ConfigDB Registering Testcase name: test_all")
     super().end_of_elaboration_phase()
-
-  def run_phase(self):
-    return super().run_phase()

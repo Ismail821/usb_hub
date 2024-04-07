@@ -62,8 +62,7 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
         ##----------------Acknowledgement-Packet-----------------------##
         self.pid.append(pid_handshake_type.ACK)
 
-    # msg = "Randomized Data for transactions: 0x%0h", hex(self.pid)
-    # self.logger.info(msg)
+    self.logger.info("Randomized Data for transactions: 0x%0h", self.transaction_id)
 
 
   def __eq__(self, other):
