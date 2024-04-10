@@ -10,7 +10,14 @@ K state:  D+ LOW  | D- HIGH | Differential 0 |
 FOR THIS CODE: HIGH SPEED
 */
 
-module transmitter(
+module transmitter #(
+  //======================Parameters===================================
+  J_STATE = 01,
+  K_STATE = 10,
+  IDLE_STATE = 00,
+  //ISMAIL_TODO: Later Move these as some input register as, the Speed and state is a
+  //run-time configuration, rather than static
+  )(
   input wire clk,
   input wire rst,
   input wire s_data_in,//serial_in,
@@ -171,3 +178,10 @@ end
 
 
 endmodule
+//Praneet TO FIX:
+//first always block, case statement not guarded against Reset.
+//Regs, J_state ... SE0. Why are they declared as 3 bits?. What does MSB signify?
+//counter doesn't need to be a 16 bit variable?, Only see go upto 2 max
+//Rename tx to some other meaningful name. Or maybe make use of output_state??
+//State variable is update for s_data_val = 0 case at state <= EOP &  state <= IDLE, Might cause multiple driver issues.
+//This whole block, **might** need re-architecturing,as need to implement receiver also within this interface module

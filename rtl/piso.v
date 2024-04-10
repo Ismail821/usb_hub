@@ -9,7 +9,7 @@ module piso #(
   input wire clk,
   input wire rst,
   //-----------------Input Signals-------------------------------------
-  input wire [`DATA_RANGE] piso_data_in,
+  input wire [`PISO_DATA_RANGE] piso_data_in,
   input wire data_avail,
   //-----------------Output Signals------------------------------------
   output reg piso_data_out,
@@ -17,13 +17,13 @@ module piso #(
   output request_data
   );
   
-reg [PISO_DATA_WIDTH-1:0]reg1=0;
-reg [PISO_DATA_WIDTH-1:0]reg2=0;
+reg [`PISO_DATA_RANGE]reg1=0;
+reg [`PISO_DATA_RANGE]reg2=0;
 
 reg reg1_empty; //new addition: indicates if the register is empty or not
 reg reg2_empty;
 
-reg [PISO_DATA_WIDTH-1:0] count;
+reg [`PISO_DATA_RANGE] count;
 
 reg send_data; //flag to control data transmission
 
