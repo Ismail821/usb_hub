@@ -1,7 +1,7 @@
 //Just a dummy module to try out the New trans_receiver module
 
 module usb_host_trans_receiver #(
-  parameters
+  //parameters
 ) (
   //=================== I/O Signals =============================
   //-----------------Common Signals------------------------------
@@ -19,7 +19,8 @@ module usb_host_trans_receiver #(
   //The Data type tells if we need a polling read request or a ACK.
   input   serial_data_in,
   input   serial_data_in_val,
-  input   serial_data_in_type,
+  input   serial_data_in_last,
+  input   serial_data_in_avail,
 
   output  request_serial_data,
   output  request_serial_data_type,
@@ -39,10 +40,10 @@ module usb_host_trans_receiver #(
 reg serial_data_out;
 reg serial_data_out_val;
 reg request_serial_data;
-reg request_serial_data_type;
+reg [REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type;
 
 ///Flags that'll be used for inter block communications
-reg request_ongoing;      //might not be necessary
+reg request_ongoing;
 reg response_ongoing;
 reg output_usb_state;
 
@@ -67,7 +68,7 @@ always (@posedge clock) begin
     if(!response_ongoing && !request_ongoing) begin
       request_ongoing <= 1;
       request_serial_data       = 1;
-      request_serial_data_type  = `REQUEST_SERIAL_DATA_READ;
+      request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_SYNC;
     end
   end
   if(request_ongoing) begin
@@ -78,11 +79,31 @@ always (@posedge clock) begin
       response_ongoing    <= 1;
       request_serial_data  = 0;
     end
-    `ifdef SIMULATION    
-      else begin
-        `ERROR("Request is ongoing but Data isn't available")
+`ifdef SIMULATION
+    else begin
+      `ERROR("Request is ongoing but Data isn't available")
+    end
+`endif
+    if(serial_data_in_last) begin
+      case(request_serial_data_type)
+      `REQUEST_SERIAL_DATA_TYPE_SYNC:begin
+        request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_PID;
+        request_serial_data       = 1;
       end
-    `endif
+      `REQUEST_SERIAL_DATA_TYPE_PID :begin
+        request_serial_data_type  = serial_data_in_avail ? 
+                                    `REQUEST_SERIAL_DATA_TYPE_PASS : `REQUEST_SERIAL_DATA_TYPE_READ;
+        request_serial_data       = 1;
+      end
+      `REQUEST_SERIAL_DATA_TYPE_READ: begin
+        request_serial_data       = 0;
+        response_ongoing          <= 1;
+      end
+      endcase
+    end else begin
+      request_serial_data         = 0;
+      request_serial_data_type    = `REQUEST_SERIAL_DATA_TYPE_NULL
+    end
   end else if (response_ongoing) begin
     output_usb_state = USB_TR_STATE_Z;
   end else begin

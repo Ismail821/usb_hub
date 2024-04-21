@@ -11,9 +11,9 @@
   	{name: 'request_serial_data',	wave: 'l.h...............l.|....1.0.|...', phase: 0},
   {name: 'request_serial_data_type',wave: 'L.5...6...7.......0.|....4.0.|...', phase: 0, data:['SYNC', 'PID', 'ReadReq', 'Ack']},
    	{name: 'serial_data',  			wave: 'l..2...3...4.......0|.....=.0|...', phase: 0, data: ['1-8','1-8','1-16','3']},
+  	{name: 'serial_data_last', 		wave: 'l.....hl..hl......hl|......hl|...', phase: -0.1},
   	{name: 'serial_data_val', 		wave: 'l..h...............l|.....h.l|...', phase: 0},
-  	{name: 'serial_data_last', 		wave: 'l.....hl..hl......hl|......10|...', phase: 0},
-  	{name: 'usb_signal_decoded', 	wave: '=..9...9...9.......0|3...09.0|3.0', data: ['idle', 'sync', 'pid','Req','RspData', 'Ack', 'Nak']},
+  	{name: 'usb_signal_decoded', 	wave: '=..9...9...9.......z|3...z9.z|3.z', data: ['idle', 'sync', 'pid','Req','RspData', 'Ack', 'Nak']},
   	{name: 'response_ongoing',  	wave: 'l..................h|....0...|1.0', phase: 0},
 
 	
@@ -22,6 +22,6 @@
    		text:'USB TransReceiver Module',
   	},
     foot:{
-   		text:'Read Request Flow b/w PISO',
+   		text:'Read Request Flow  PISO',
   	}
 }
