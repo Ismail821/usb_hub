@@ -1,0 +1,27 @@
+{signal: [
+  	{name: 'clock', 	wave: 'P'.repeat(33), phase: 0},
+    {name: 'polling_clock', 	wave: 'lhl..............................', phase: 0},
+  	(function (ticks) {
+  		var t, data = [];
+  		for (t = 0; t < ticks; t++) 
+   			{data.push(t+'')}
+  		return {name: 'cycle', wave: '='.repeat(ticks), data: data};
+	})(33),	
+	{name: 'request_ongoing',  		wave: '0..1...............0|....1..0|...', phase: 0},
+  	{name: 'request_serial_data',	wave: 'l.h...............l.|....1.0.|...', phase: 0},
+  {name: 'request_serial_data_type',wave: 'L.5...6...7.......0.|....4.0.|...', phase: 0, data:['SYNC', 'PID', 'ReadReq', 'Ack']},
+   	{name: 'serial_data',  			wave: 'l..2...3...4.......0|.....=.0|...', phase: 0, data: ['1-8','1-8','1-16','3']},
+  	{name: 'serial_data_val', 		wave: 'l..h...............l|.....h.l|...', phase: 0},
+  	{name: 'serial_data_last', 		wave: 'l.....hl..hl......hl|......10|...', phase: 0},
+  	{name: 'usb_signal_decoded', 	wave: '=..9...9...9.......0|3...09.0|3.0', data: ['idle', 'sync', 'pid','Req','RspData', 'Ack', 'Nak']},
+  	{name: 'response_ongoing',  	wave: 'l..................h|....0...|1.0', phase: 0},
+
+	
+	],
+  	head:{
+   		text:'USB TransReceiver Module',
+  	},
+    foot:{
+   		text:'Read Request Flow b/w PISO',
+  	}
+}

@@ -85,12 +85,12 @@ class USB_env(uvm_env):
       await RisingEdge(self.uvc_agent.uvc_if.dut.hi_clock)
       self.cycles=+1
 
-  async def generate_low_clock(self):
+  async def generate_hi_clock(self):
     self.logger.critical(msg="Starting Clock generation")
     # fork(Clock(self.dut.hi_clock, 10, "step").start())
     Clock(self.dut.hi_clock, 10, "step").start()
 
-  async def generate_hi_clock(self):
+  async def generate_low_clock(self):
     self.logger.critical(msg="Starting Clock generation")
     # fork(Clock(signal=self.dut.low_clock, period=100, units="step").start())
     Clock(signal=self.dut.low_clock, period=1, units="step").start()
