@@ -20,7 +20,7 @@ module usb_host_trans_receiver #(
   input   serial_data_in,
   input   serial_data_in_val,
   input   serial_data_in_last,
-  input   serial_data_in_avail,
+  input   serial_data_in_avail,       //Pass through from !FIFO Empty
 
   output  request_serial_data,
   output  request_serial_data_type,
@@ -40,7 +40,7 @@ module usb_host_trans_receiver #(
 reg serial_data_out;
 reg serial_data_out_val;
 reg request_serial_data;
-reg [REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type;
+reg [`REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type;
 
 ///Flags that'll be used for inter block communications
 reg request_ongoing;
