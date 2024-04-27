@@ -3,3 +3,5 @@
 //The path of the files should be given from the root directory of the project
 
 `include "rtl/common_defines.v"
+`include "rtl/piso.v"
+`include "rtl/usb_trans_receiver.v"
