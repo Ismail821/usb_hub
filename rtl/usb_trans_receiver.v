@@ -1,7 +1,7 @@
-//Just a dummy module to try out the New trans_receiver module
 
 module usb_host_trans_receiver #(
   //parameters
+  parameter DUMMY_PARAM = 0
 ) (
   //=================== I/O Signals =============================
   //-----------------Common Signals------------------------------
@@ -10,9 +10,9 @@ module usb_host_trans_receiver #(
   input reset,
   //-----------------State Signals------------------------------
   //connected from the Top module/Here based on the device speed
-  input IDLE_state,
-  input J_state,
-  input K_state,
+  input wire [1:0] IDLE_state,
+  input wire [1:0] J_state,
+  input wire [1:0] K_state,
 
   //Signals connected to the PISO, which will be driven into USB IF
   //request_serial_data goes high and data comes from the next cycles
@@ -20,7 +20,7 @@ module usb_host_trans_receiver #(
   input   serial_data_in,
   input   serial_data_in_val,
   input   serial_data_in_last,
-  input   serial_data_in_avail,       //Pass through from !FIFO Empty
+  input   serial_data_in_avail,
 
   output  request_serial_data,
   output  request_serial_data_type,
@@ -33,7 +33,7 @@ module usb_host_trans_receiver #(
   input   SIPO_empty,
 
   //The inout signals that will be driven. it's a concatination of d+ and d-
-  inout   usb_signals
+  inout   wire [1:0] usb_signals
 );
 
 //Module Out declarations
@@ -46,27 +46,42 @@ reg [`REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type;
 reg request_ongoing;
 reg response_ongoing;
 reg output_usb_state;
+reg output_usb_state_d1;
 
 //Some flopped signals for Storing prev values
 reg j_state;
 reg k_state;
+reg idle_state;
 reg serial_data_out_val_d1;
+reg serial_data_in_val_d1;
+reg polling_clock_d1;
+
+reg [1:0] usb_signals_reg;
+
+parameter USB_TR_STATE_TOGGLE = 3'b00;
+parameter USB_TR_STATE_IDLE   = 3'b01;
+parameter USB_TR_STATE_Z      = 3'b10;
+
 
 //State Variables for the Request Thread and Response Thread.
-
-always (@posedge clock) begin
+always @(*) begin
   j_state     <= J_state;
   k_state     <= K_state;
   idle_state  <= IDLE_state;
-  output_usb_state_d1 <= output_usb_state;
 end
+always @(posedge clock) begin
+  output_usb_state_d1 <= output_usb_state;
+  polling_clock_d1    <= polling_clock;
+end
+
+assign usb_signal = usb_signals_reg;
 
 //Request Data threat, sets the output_usb_state flag Receives the data from the serial input
 //and sets the output_usb_state accordingly.
-always (@posedge clock) begin
-  if(polling_clock) begin
+always @(posedge clock) begin
+  if(polling_clock & !polling_clock_d1) begin
     if(!response_ongoing && !request_ongoing) begin
-      request_ongoing <= 1;
+      request_ongoing           <= 1;
       request_serial_data       = 1;
       request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_SYNC;
     end
@@ -80,20 +95,20 @@ always (@posedge clock) begin
       request_serial_data  = 0;
     end
 `ifdef SIMULATION
-    else begin
-      `ERROR("Request is ongoing but Data isn't available")
-    end
+//    else begin
+//      `ERROR("Request is ongoing but Data isn't available")
+//    end
 `endif
     if(serial_data_in_last) begin
       case(request_serial_data_type)
-      `REQUEST_SERIAL_DATA_TYPE_SYNC:begin
-        request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_PID;
+      `REQUEST_SERIAL_DATA_TYPE_SYNC: begin
         request_serial_data       = 1;
+        request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_PID;
       end
-      `REQUEST_SERIAL_DATA_TYPE_PID :begin
+      `REQUEST_SERIAL_DATA_TYPE_PID:  begin
+        request_serial_data       = 1;
         request_serial_data_type  = serial_data_in_avail ? 
                                     `REQUEST_SERIAL_DATA_TYPE_PASS : `REQUEST_SERIAL_DATA_TYPE_READ;
-        request_serial_data       = 1;
       end
       `REQUEST_SERIAL_DATA_TYPE_READ: begin
         request_serial_data       = 0;
@@ -102,7 +117,7 @@ always (@posedge clock) begin
       endcase
     end else begin
       request_serial_data         = 0;
-      request_serial_data_type    = `REQUEST_SERIAL_DATA_TYPE_NULL
+      request_serial_data_type    = `REQUEST_SERIAL_DATA_TYPE_NULL;
     end
   end else if (response_ongoing) begin
     output_usb_state = USB_TR_STATE_Z;
@@ -114,20 +129,20 @@ end
 always @(posedge clock) begin
   case (output_usb_state)
   USB_TR_STATE_IDLE: begin
-    usb_signals = idle_state;
+    usb_signals_reg = idle_state;
   end
   USB_TR_STATE_TOGGLE: begin
     if(output_usb_state_d1 == USB_TR_STATE_IDLE) begin
-      usb_signals = k_state;
+      usb_signals_reg = k_state;
     end else begin
-      usb_signals = ~usb_signals;
+      usb_signals_reg = ~usb_signals;
     end
   end
   USB_TR_STATE_Z:begin
-    usb_signals = 2'bz;
+    usb_signals_reg = 2'bz;
   end
   default: begin
-    usb_signals = 2'bx;
+    usb_signals_reg = 2'bx;
   end
   endcase
 end

@@ -1,4 +1,4 @@
-`define PISO_DATA_RANGE = `WIDTH_TO_RANGE(PISO_DATA_WIDTH)
+`define PISO_DATA_RANGE `WIDTH_TO_RANGE(PISO_DATA_WIDTH)
  
 module piso #(
   //======================Parameters===================================
@@ -18,7 +18,8 @@ module piso #(
   output reg piso_data_out,
   output piso_data_val,
   output request_data,  //whenever data is available and reg1 is empty, it'll request for data. will be connected to read_enable in fifo
-  output reg piso_data_last   //will indicate when the last bit of the stream is sent
+  output reg piso_data_last,   //will indicate when the last bit of the stream is sent
+  output reg serial_data_avail
   );
   
 reg [`PISO_DATA_RANGE] reg1=0;
@@ -39,6 +40,7 @@ reg tx;
 reg tx2;
 reg tx3;
 
+reg request_data;
 
 reg receive;
 
@@ -137,10 +139,10 @@ always@(posedge clk) begin
   //send data out serially
   if (send_data2 && !select)begin
     tx<=1;
-    reg2<= {1'b0,reg2[DATA_LENGTH-1:1]}; //send the data from reg2 serially
+    reg2<= {1'b0,reg2[`PISO_DATA_RANGE]}; //send the data from reg2 serially
     piso_data_out<= reg2[0]; //Sending LSB first
     count2<= count2+1;
-    if(count2==DATA_LENGTH-1)begin
+    if(count2==PISO_DATA_WIDTH-1)begin
       piso_data_last<=1;
     end
     else begin
@@ -149,11 +151,11 @@ always@(posedge clk) begin
   end
   else if (send_data3 && select)begin
     tx<=1;
-    reg3<= {1'b0,reg3[DATA_LENGTH-1:1]}; //send the data from reg3 serially
+    reg3<= {1'b0,reg3[PISO_DATA_WIDTH-1:1]}; //send the data from reg3 serially
     piso_data_out<= reg3[0]; //Sending LSB first
     count3<= count3+1;
     
-    if(count3==DATA_LENGTH-1)begin
+    if(count3==PISO_DATA_WIDTH-1)begin
       piso_data_last<=1;
     end
     else begin
@@ -164,7 +166,7 @@ always@(posedge clk) begin
     piso_data_out<=0;
     tx<=0;
   end
-  if(count2==DATA_LENGTH)begin
+  if(count2==PISO_DATA_WIDTH)begin
     send_data2<=0;
     //tx<=0;
     tx2<=0;
@@ -173,7 +175,7 @@ always@(posedge clk) begin
     //select = 1;
     piso_data_last<=0;
   end
-  if(count3==DATA_LENGTH)begin
+  if(count3==PISO_DATA_WIDTH)begin
     send_data3<=0;
     //tx<=0;
     //tx2<=0;
@@ -191,10 +193,10 @@ always @(*)begin
     select=0;
   end
   else begin
-    if(count2==DATA_LENGTH)begin
+    if(count2==PISO_DATA_WIDTH)begin
       select=1;
     end
-    else if(count3==DATA_LENGTH)begin
+    else if(count3==PISO_DATA_WIDTH)begin
       select=0;
     end
   end
