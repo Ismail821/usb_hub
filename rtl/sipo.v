@@ -12,7 +12,7 @@ module sipo #(parameter integer DATA_WIDTH=8)( //remove integer
 
 );
 
-reg [DATA_WIDTH:0]count1, count2;
+reg [DATA_WIDTH:0]count1, count2, dummy_count4;
 
 reg [DATA_WIDTH-1:0] shift_reg1, shift_reg2;
 
