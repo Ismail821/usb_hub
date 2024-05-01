@@ -23,7 +23,7 @@ module usb_host_trans_receiver #(
   input   serial_data_in_avail,
 
   output  request_serial_data,
-  output  request_serial_data_type,
+  output  reg [`REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type,
 
   //Signals Connected to SIPO, Send data into SIPO to FIFO, when we get data 
   //send it along with val. if SIPO is still empty. Then we can send the Ack
@@ -40,7 +40,6 @@ module usb_host_trans_receiver #(
 reg serial_data_out;
 reg serial_data_out_val;
 reg request_serial_data;
-reg [`REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type;
 
 ///Flags that'll be used for inter block communications
 reg request_ongoing;
@@ -62,6 +61,7 @@ parameter USB_TR_STATE_TOGGLE = 3'b00;
 parameter USB_TR_STATE_IDLE   = 3'b01;
 parameter USB_TR_STATE_Z      = 3'b10;
 
+assign usb_signals = request_ongoing ? usb_signals_reg : 2'bz
 
 //State Variables for the Request Thread and Response Thread.
 always @(*) begin
@@ -73,8 +73,6 @@ always @(posedge clock) begin
   output_usb_state_d1 <= output_usb_state;
   polling_clock_d1    <= polling_clock;
 end
-
-assign usb_signal = usb_signals_reg;
 
 //Request Data threat, sets the output_usb_state flag Receives the data from the serial input
 //and sets the output_usb_state accordingly.

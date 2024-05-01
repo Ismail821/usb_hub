@@ -18,7 +18,3 @@
 `define ERROR(input_string)\
   $display("RTL Error: %s, from Module %m", input_string); \
   $finish
-
-parameter USB_TR_STATE_TOGGLE
-parameter USB_TR_STATE_IDLE
-parameter USB_TR_STATE_Z

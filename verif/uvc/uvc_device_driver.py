@@ -27,6 +27,9 @@ class USB_lowspeed_device_driver(uvm_driver):
 
   async def run_phase(self):
     self.NUM_DEVICES = int(self.low_speed_if.dut.NUM_USB_DEVICES)
+    await self.reset_all_devices()
+    for i in range (self.NUM_DEVICES):
+      self.drive_idle_state(i)
     while True:
       self.low_item = USB_Lowspeed_Data_Seq_Item("Driver_low_item")
       self.logger.info("Waiting for sequence item")
@@ -111,7 +114,7 @@ class USB_lowspeed_device_driver(uvm_driver):
       str(value)
       return ((value >> n & 1))
 
-    def put_bit(bit_positon):
+    def get_bit_mask(bit_positon):
       value = 0
       for i in range (self.NUM_DEVICES):
         if(i != bit_positon):
@@ -145,8 +148,16 @@ class USB_lowspeed_device_driver(uvm_driver):
     for i in range (no_bits):
       self.logger.debug("Starting to drive signal bit ["+ str(i) + "] = " + str(get_bit(data, i)))
       if(get_bit(data, i) == 0):
-        bit_mask = put_bit(self.low_item.device_number)
+        bit_mask = get_bit_mask(self.low_item.device_number)
         set_if_bit(bit_mask=bit_mask)
-      if(self.low_item.device_number == self.NUM_DEVICES - 1):
-        drive_if_bits(value=1)
+      drive_if_bits(value=1)
       await RisingEdge(self.low_speed_if.dut.low_clock)
+  
+  async def reset_all_devices(self):
+    for i in range (40):
+      await RisingEdge(self.low_speed_if.dut.low_clock)
+      self.low_speed_if.dut.device_d_plus  = 0
+      self.low_speed_if.dut.device_d_minus = 0
+  
+  async def drive_idle_state(self, pos):
+    await RisingEdge(self.low_speed_if.dut.low_clock)

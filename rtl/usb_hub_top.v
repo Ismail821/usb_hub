@@ -13,8 +13,8 @@ module usb_hub_top #(
   output wire host_tx_minus,
   input  wire host_rx_plus,
   input  wire host_rx_minus,
-  inout  wire [NUM_USB_DEVICES*2-1:0] usb_signals,
-//  inout  wire [`DEV_RANGE] device_d_minus,
+  inout  wire [`DEV_RANGE] device_d_plus,
+  inout  wire [`DEV_RANGE] device_d_minus,
 
   //======Debug Signals, Doesn't have any Functional useage but very helpful in Debug======
   input  wire [63:00] cycle,
@@ -26,7 +26,7 @@ module usb_hub_top #(
 //All the External Port Connections should come through this &
 // for the Sake of this project the Clock is also Connected through This
 
-reg reset;
+wire [`DEV_RANGE] reset;
 wire [`DEV_RANGE] piso_data_out;
 wire [`DEV_RANGE] piso_data_val;
 wire [`DEV_RANGE] piso_request_data;
@@ -41,6 +41,16 @@ wire [`DEV_RANGE] trans_rcvr_request_piso_data;
 wire [NUM_USB_DEVICES*`REQUEST_SERIAL_DATA_TYPE_WIDTH-1:0] 
                   trans_rcvr_request_piso_data_type;
 wire [`DEV_RANGE] polling_clock;
+
+wire [NUM_USB_DEVICES*2-1:0] usb_signals;
+
+genvar i;
+generate
+  for (i=0; i<NUM_USB_DEVICES; i=i+1) begin
+    assign usb_signals[(i*2)]   = device_d_plus[i];
+    assign usb_signals[(i*2)+1] = device_d_minus[i];
+  end
+endgenerate
 
 usb_host_speed_detector host_speed_detector[`DEV_RANGE] (
 .clock(low_clock),

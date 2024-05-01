@@ -9,7 +9,7 @@ from verif.uvc.uvc_seq_item import USB_Lowspeed_Data_Seq_Item
 from verif.uvc.uvc_seq_item import USB_Hispeed_Data_Seq_Item
 from verif.uvc.uvc_seqs     import uvc_sequence
 
-class USB_main_seq(uvm_sequence):
+class USB_main_seq(uvc_sequence):
   """
   USB_main_seq: The Main sequence that is started for all the Tests, This Sequence decides on
   what subsequence sequences to start based on the Testcases. This way the testcase just, needs
@@ -36,10 +36,11 @@ class USB_main_seq(uvm_sequence):
       self.logger.fatal("No valid Testcase Proveded %s", testcase)
     self.logger.info("Body: Starting Sequence " + current_seq.get_name())
     await current_seq.start()
+    await self.wait_low_clock(200)
     self.logger.critical("Main sequence Ended")
     # self.do_something
 
-class USB_test_one(uvm_sequence):
+class USB_test_one(uvc_sequence):
   """
   USB_test_one seq, Initiates any one (Currently 0) of the Device and 'only' the 
   lowspeed port of the Host side This should be used like a really basic test for bringup
@@ -69,7 +70,7 @@ class USB_test_one(uvm_sequence):
     await(Combine(host_low_seq_task, device_low_seq_task))
     self.logger.info("All Sequences Completed, Sequences ending Soon")
 
-class USB_test_all(uvm_sequence):
+class USB_test_all(uvc_sequence):
   """
   USB_test_all sequence, Initiates all the Device sequences and initiates both the 
   Hi speed and Low speed Sequence for the Host.
@@ -91,6 +92,7 @@ class USB_test_all(uvm_sequence):
     host_low_seq.host = 1
     device_seq_a  = [USB_low_seq("usb_device_seq"+str(i), i) for i in range (number_of_devices)]
 
+    await(self.wait_low_clock(50))
     host_hi_seq_task =  cocotb.start_soon(host_hi_seq.start(host_hi_seqr))
     host_low_seq_task = cocotb.start_soon(host_low_seq.start(host_low_seqr))
     device_seq_task_a = [cocotb.start_soon(device_seq_a[i].start(device_low_seqr_a[i])) for i in range (number_of_devices)]

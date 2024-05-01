@@ -44,6 +44,8 @@ class USB_env(uvm_env):
     self.uvc_agent        = USB_uvc_agent("uvc_agent", self.uvc_cfg, self)
     self.scoreboard       = USB_Scoreboard("scoreboard", parent=self)
 
+    self.low_clock_time_period = 10
+    ConfigDB().set(None, "*", "low_clock_period", self.low_clock_time_period)
 
   def connect_phase(self):
     self.logger.info("Starting Env Connect Phase")
@@ -87,10 +89,8 @@ class USB_env(uvm_env):
 
   async def generate_hi_clock(self):
     self.logger.critical(msg="Starting Clock generation")
-    # fork(Clock(self.dut.hi_clock, 10, "step").start())
-    Clock(self.dut.hi_clock, 10, "step").start()
+    Clock(self.dut.hi_clock, self.low_clock_time_period, "step").start()
 
   async def generate_low_clock(self):
     self.logger.critical(msg="Starting Clock generation")
-    # fork(Clock(signal=self.dut.low_clock, period=100, units="step").start())
     Clock(signal=self.dut.low_clock, period=1, units="step").start()

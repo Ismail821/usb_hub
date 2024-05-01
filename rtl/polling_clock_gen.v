@@ -1,17 +1,16 @@
-module polling_clock_gen#(
-  NUMBER_OF_OUTPUT_CLOCKS = 1,
-  TIME_PERIOD_PCLOCK = 100
+module polling_clock_gen #(
+  parameter NUMBER_OF_OUTPUT_CLOCKS = 1,
+  parameter TIME_PERIOD_PCLOCK = 100
 )(
-  input clock,
-  input reset,
-  output polling_clock
+  input wire clock,
+  input wire [NUMBER_OF_OUTPUT_CLOCKS-1:0] reset,
+  output reg [NUMBER_OF_OUTPUT_CLOCKS-1:0] polling_clock
 );
     
-  reg [NUMBER_OF_OUTPUT_CLOCKS-1:0] polling_clock;  
   reg [$clog2(TIME_PERIOD_PCLOCK)-1:0] counter;
-  
+
   always @(posedge clock) begin
-    if(reset) begin
+    if(&reset) begin
       counter = 0;
       polling_clock = 0;
     end else begin
