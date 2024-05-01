@@ -12,8 +12,7 @@ module sipo #(parameter integer DATA_WIDTH=8)( //remove integer
 
 );
 
-reg [DATA_WIDTH:0]count1, count2, count3;
-//new changes made
+reg [DATA_WIDTH:0]count1, count2;
 
 reg [DATA_WIDTH-1:0] shift_reg1, shift_reg2;
 
@@ -21,8 +20,6 @@ reg select=0; //to select the register
 reg tx;
 
 
-//new comments added 
-//changes made
 
 
 always @(posedge clk)begin
