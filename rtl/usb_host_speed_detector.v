@@ -12,23 +12,6 @@ module usb_host_speed_detector#(
 
   reg [$clog2(RESET_TIMER)-1:0] reset_counter;
 
-  always @(posedge reset)begin
-    case(usb_signals)
-      2'b10: begin
-        j_state = 2'b10;
-        k_state = 2'b01;
-        idle_state  = j_state;
-      end
-      2'b01: begin
-        j_state = 2'b01;
-        k_state = 2'b10;
-        idle_state = j_state;
-      end
-      default:begin
-      end
-    endcase
-  end 
-
   always @(posedge clock) begin
     if(usb_signals == 2'b0) begin
       if(reset_counter == RESET_TIMER) begin
@@ -45,5 +28,20 @@ module usb_host_speed_detector#(
       reset = 0;
     end
   end
+
+  always @(negedge reset)begin
+    case(usb_signals)
+      2'b10: begin
+        j_state     = 2'b10;
+        k_state     = 2'b01;
+        idle_state  = j_state;
+      end
+      2'b01: begin
+        j_state     = 2'b01;
+        k_state     = 2'b10;
+        idle_state  = j_state;
+      end
+    endcase
+  end 
 
 endmodule

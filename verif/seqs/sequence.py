@@ -8,6 +8,7 @@ import logging
 from verif.uvc.uvc_seq_item import USB_Lowspeed_Data_Seq_Item
 from verif.uvc.uvc_seq_item import USB_Hispeed_Data_Seq_Item
 from verif.uvc.uvc_seqs     import uvc_sequence
+from verif.uvc.uvc_enums    import *
 
 class USB_main_seq(uvc_sequence):
   """
@@ -119,8 +120,7 @@ class USB_hi_seq(uvc_sequence):
     self.logger.info("Done generating sequence loops")
 
 class USB_low_seq(uvc_sequence):
-
-  host = 1
+  host = 0
   def __init__(self, name, device_number):
     super().__init__(name=name)
     self.logger = logging.getLogger(name)
@@ -134,7 +134,7 @@ class USB_low_seq(uvc_sequence):
       for i in range(1):
         low_seq_item  = USB_Lowspeed_Data_Seq_Item(name=self.name+"_item"+str(i))
         self.logger.critical("Sequence Starting item \"" + low_seq_item.name + "\" %s", low_seq_item)
-        low_seq_item.randomize(host=self.host)
+        low_seq_item.randomize(req=self.host)
         self.logger.info("Sequence item randomized: TID: 0x%0x", low_seq_item.transaction_id)
         low_seq_item.device_number = self.device_number
         await self.start_item(low_seq_item)
@@ -145,4 +145,14 @@ class USB_low_seq(uvc_sequence):
         self.logger.debug("Waiting for a Random amount of time")
         await self.wait_low_clock(random.randint(5,20))
       self.logger.info("Done generating sequence loops")
-
+    else:
+      rsp = USB_Lowspeed_Data_Seq_Item("dummy_rsp_item")
+      await self.start_item(rsp)
+      await self.finish_item(rsp)
+      rsp = await self.get_response()
+      if(rsp.req_type == request_type.WRITE):
+        rsp.req_type = request_type.WRITE
+        rsp.randomize(req=0)
+        await self.start_item(rsp)
+        self.logger.critical("Sequence finished sequence.start_item")
+        await self.finish_item(rsp)

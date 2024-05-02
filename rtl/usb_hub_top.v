@@ -42,7 +42,7 @@ wire [NUM_USB_DEVICES*`REQUEST_SERIAL_DATA_TYPE_WIDTH-1:0]
                   trans_rcvr_request_piso_data_type;
 wire [`DEV_RANGE] polling_clock;
 
-wire [NUM_USB_DEVICES*2-1:0] usb_signals;
+inout wire [NUM_USB_DEVICES*2-1:0] usb_signals;
 
 genvar i;
 generate
@@ -63,7 +63,7 @@ usb_host_speed_detector host_speed_detector[`DEV_RANGE] (
 
 polling_clock_gen #(
   .NUMBER_OF_OUTPUT_CLOCKS(NUM_USB_DEVICES),
-  .TIME_PERIOD_PCLOCK(100)
+  .TIME_PERIOD_PCLOCK(30)
 )host_pclock_gen(
   .clock(low_clock),
   .reset(reset),
@@ -96,7 +96,7 @@ piso host_piso [`DEV_RANGE] (
   .data_avail(~fifo_empty),
   .request_serial_data_type(trans_rcvr_request_piso_data_type),
   .request_serial_data(trans_rcvr_request_piso_data),
-  .serial_data_avail(piso_serial_data_avail),
+  .serial_data_available(piso_serial_data_avail),
   .piso_data_out(piso_data_out),
   .piso_data_val(piso_data_val),
   .request_data(piso_request_data),

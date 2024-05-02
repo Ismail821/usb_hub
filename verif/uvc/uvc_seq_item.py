@@ -30,8 +30,8 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
     self.uvc_cfg = ConfigDB().get(None, "", "uvc_cfg")
 
 
-  def randomize(self, host):
-    if(host):
+  def randomize(self, req):
+    if(req):
       self.req_type     = random.choice(list(request_type))
       self.logger.warning("Choosen a Request of the Type" + self.req_type.name)
       if(self.req_type == request_type.WRITE):
@@ -54,13 +54,15 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
         ##----------------Acknowledgement-Packet-----------------------##
         self.pid.append(pid_handshake_type.ACK)
     else:
-        ##----------------Data-Packet----------------------------------##
-        self.pid.append(pid_data_type.DATA0)
-        self.data_bytes = random.randint(0,self.DATA_MAX_BYTES)
-        self.d_data       = random.randint(0, 8*self.data_bytes)
-        # self.crc.append(self.calculate_crc())
-        ##----------------Acknowledgement-Packet-----------------------##
-        self.pid.append(pid_handshake_type.ACK)
+        if(self.req_type == request_type.READ):
+          ##----------------Data-Packet----------------------------------##
+          self.pid.append(pid_data_type.DATA0)
+          self.data_bytes = random.randint(0,self.DATA_MAX_BYTES)
+          self.d_data       = random.randint(0, 8*self.data_bytes)
+        if(self.req_type == request_type.WRITE):
+          # self.crc.append(self.calculate_crc())
+          ##----------------Acknowledgement-Packet-----------------------##
+          self.pid.append(pid_handshake_type.ACK)
 
     self.logger.info("Randomized Data for transactions: 0x%0h", self.transaction_id)
 

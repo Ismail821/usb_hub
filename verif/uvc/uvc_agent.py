@@ -98,3 +98,5 @@ class USB_uvc_agent (uvm_agent):
       self.uvc_if.dut.cycle.value = self.cycle
       self.cycle += 1
       self.logger.debug(msg="Low Clock Advanced: Current cycle (Low clock) = "+str(self.cycle))
+      if(self.cycle >= 500):
+        raise Exception("-----GLOBAL_TIMEOUT 1000 CLOCKS EXCEDED----")

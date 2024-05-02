@@ -10,6 +10,11 @@ class packet_pid_type(Enum):
   HANDSHAKE = auto()
   SPECIAL   = auto()
 
+class usb_txn_type(Enum):
+  DIFFERENTIAL  = auto()
+  SE0           = auto()
+  SE1           = auto()
+
 class pid_token_type(Enum):
   OUT   = 0b0001
   IN    = 0b1001

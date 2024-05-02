@@ -28,8 +28,7 @@ class USB_lowspeed_device_driver(uvm_driver):
   async def run_phase(self):
     self.NUM_DEVICES = int(self.low_speed_if.dut.NUM_USB_DEVICES)
     await self.reset_all_devices()
-    for i in range (self.NUM_DEVICES):
-      self.drive_idle_state(i)
+    await self.idle_all_devices()
     while True:
       self.low_item = USB_Lowspeed_Data_Seq_Item("Driver_low_item")
       self.logger.info("Waiting for sequence item")
@@ -39,6 +38,8 @@ class USB_lowspeed_device_driver(uvm_driver):
       self.seq_item_port.item_done()
 
   async def start_transaction(self):
+    if(self.low_item.name == "dummy_rsp_item"):
+      return
     await self.initialize_port()
     self.low_speed_if.device_state = self.low_speed_if.device_state | (DEBUG_PACKET.SYNC_PACKET.value << self.low_item.device_number*4)
     self.low_speed_if.dut.dev_low_packet_state.value = self.low_speed_if.device_state
@@ -158,6 +159,12 @@ class USB_lowspeed_device_driver(uvm_driver):
       await RisingEdge(self.low_speed_if.dut.low_clock)
       self.low_speed_if.dut.device_d_plus  = 0
       self.low_speed_if.dut.device_d_minus = 0
-  
-  async def drive_idle_state(self, pos):
-    await RisingEdge(self.low_speed_if.dut.low_clock)
+
+  async def idle_all_devices(self, dev_num=0):
+    idle_state = 0
+    for i in range (self.NUM_DEVICES):
+      idle_state = idle_state << 1 | 0b1
+    for i in range (2):
+      await RisingEdge(self.low_speed_if.dut.low_clock)
+      self.low_speed_if.dut.device_d_plus  = 0
+      self.low_speed_if.dut.device_d_minus = idle_state
