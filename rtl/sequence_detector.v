@@ -31,7 +31,7 @@ always@(posedge clk)begin
     case(state)
     	
     	IDLE:begin
-				sequence_detected<=0;    	
+		sequence_detected<=0;    	
     		if(serial_data_in==0)begin
     			state<=A;
     		end
