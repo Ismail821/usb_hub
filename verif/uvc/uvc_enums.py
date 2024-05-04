@@ -51,6 +51,9 @@ class DEBUG_PACKET(Enum):
   DATA_PACKET_DATA= 0b0111
 
 class usb_state(Enum):
+  SE0       = 0b00
   J_STATE   = 0b01
   K_STATE   = 0b10
+  SE1       = 0b11
+  Z         = "zz"
   #d_minus, d_plus

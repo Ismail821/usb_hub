@@ -9,8 +9,9 @@ from verif.uvc.uvc_enums import *
 
 class USB_lowspeed_device_driver(uvm_driver):
 
-  device_d_plus_prev = 0
+  device_d_plus_prev  = 0
   device_d_minus_prev = 0
+  prev_usb_state      = usb_state.SE0
 
   def __init__(self, name, uvc_cfg, lowspeed_if, i, parent):
     self.low_speed_if = lowspeed_if
@@ -32,20 +33,26 @@ class USB_lowspeed_device_driver(uvm_driver):
   async def run_phase(self):
     self.NUM_DEVICES = int(self.low_speed_if.dut.NUM_USB_DEVICES)
     # self.send_responses()
+    self.logger.info("Resetting All the Devices")
     await self.reset_all_devices()
     await self.idle_all_devices()
+    self.logger.info("All Device lines set to Idle and to Z.")
     while True:
       self.low_item = USB_Lowspeed_Data_Seq_Item("Driver_low_item")
       self.logger.info("Waiting for sequence item")
       self.low_item = await self.seq_item_port.get_next_item()
       self.logger.info("Received sequence item with TID = 0x%0x, %s",   self.low_item.transaction_id, vars(self.low_item))
-      await(self.start_transaction())
-      self.seq_item_port.item_done()
+      if(self.low_item.name == "dummy_rsp_item"): 
+        self.logger.info("Received a seq_item with name %s, will await for responses", self.low_item.name)
+        await self.send_responses()
+        self.seq_item_port.item_done(self.low_item)
+      else:
+        self.logger.info("Received a seq_item with name %s, will drive requests", self.low_item.name)
+        await self.start_transaction()
+        self.seq_item_port.item_done()
     
 
   async def start_transaction(self):
-    if(self.low_item.name == "dummy_rsp_item"):
-      return
     self.driver_active = 1
     await self.initialize_port()
     self.low_speed_if.device_state = self.low_speed_if.device_state | (DEBUG_PACKET.SYNC_PACKET.value << self.low_item.device_number*4)
@@ -130,7 +137,6 @@ class USB_lowspeed_device_driver(uvm_driver):
       self.low_speed_if.d_minus  = (self.low_speed_if.d_minus) ^ (bit_mask & device_list)
       self.logger.debug("current interface value should after driving = " + bin((self.low_speed_if.d_plus)))
       self.logger.debug("current interface value should after driving = " + bin((self.low_speed_if.d_minus)))
-
     def drive_if_bits(value):
       if(value == 1):
         self.logger.debug("Drving Values from variables to interface d_plus = %2b, d_minus = %2b", self.low_speed_if.d_plus, self.low_speed_if.d_minus)
@@ -138,17 +144,19 @@ class USB_lowspeed_device_driver(uvm_driver):
       self.low_speed_if.dut.device_d_minus = self.low_speed_if.d_minus
 
     for i in range (no_bits):
-      self.logger.debug("Starting to drive signal bit ["+ str(i) + "] = " + str(self.get_bit(data, i)))
+      self.logger.debug("Starting to drive signal bit [\"%0d\"] = %0d",i, self.get_bit(data, i))
       if(self.get_bit(data, i) == 0):
         bit_mask = self.get_bit_mask(self.low_item.device_number)
         set_if_bit(bit_mask=bit_mask)
       drive_if_bits(value=1)
       await RisingEdge(self.low_speed_if.dut.low_clock)
   
-  def get_bit(value, n):
-    int(value)
-    str(value)
-    return ((value >> n & 1))
+  def get_bit(self, value, n):
+    # str(value)
+    dev_value = list(str(value))
+    self.logger.info("List value is %s", dev_value[0:])
+    self.logger.debug("Returning Char value[%0d] = %s from %s",n ,dev_value[self.NUM_DEVICES - n - 1], str(value))
+    return (dev_value[self.NUM_DEVICES - n - 1])
 
   def get_bit_mask(self, bit_positon):
     value = 0
@@ -172,8 +180,12 @@ class USB_lowspeed_device_driver(uvm_driver):
 
   async def z_all_devices(self):
     await RisingEdge(self.low_speed_if.dut.low_clock)
-    self.low_speed_if.dut.device_d_plus  = BinaryValue("z", self.NUM_DEVICES)
-    self.low_speed_if.dut.device_d_minus = BinaryValue("z", self.NUM_DEVICES)
+    z_str = "z"
+    for i in range (self.NUM_DEVICES - 1):
+      z_str = z_str + "z"
+    self.logger.info(z_str)
+    self.low_speed_if.dut.device_d_plus  = BinaryValue(z_str, self.NUM_DEVICES)
+    self.low_speed_if.dut.device_d_minus = BinaryValue(z_str, self.NUM_DEVICES)
 
   async def idle_all_devices(self, dev_num=0):
     idle_state = 0
@@ -186,15 +198,100 @@ class USB_lowspeed_device_driver(uvm_driver):
     await self.z_all_devices()
   
   async def send_responses(self):
+    reset_timer     = 0
+    local_counter   = 0
+    out_of_reset    = 0
+    data_buffer     = []
+    read_req_seen   = 0
+    write_req_seen  = 0
+    write_data_seen = 0
+    SYNC_PACKET = [1, 0, 0, 0, 0, 0, 0, 1]
+    READ_PID    = [1, 0, 0, 1, 1, 0, 0, 1]
+    self.logger.info("Starting to record for a response")
     while True:
       await RisingEdge(self.low_speed_if.dut.low_clock)
-      # if(~self.driver_active):
-
+      current_state = await self.decode_current_usb()
+      self.logger.info("Current state = %s", current_state.name)
+      if(current_state == usb_state.SE0):
+        if(self.prev_usb_state == usb_state.SE0):
+          end_of_packet  = 1
+        reset_timer+1
+      elif(current_state == usb_state.SE1):
+        reset_timer-1
+      else:
+        reset_timer = 0
+        if(self.prev_usb_state == usb_state.Z) & (current_state == usb_state.J_STATE):
+          #Line Just Intialized from Z to J_State(Idle)
+          out_of_reset = 1
+          self.logger.debug("Observed Line out of z into idle state")
+        elif(self.prev_usb_state == usb_state.K_STATE) & (current_state == usb_state.J_STATE):
+          #If it was out of reset, then a change represents a start of packet. after which we have to start recording the data
+          if(out_of_reset == 1):
+            start_of_packet = 1
+            out_of_reset    = 0
+            self.logger.debug("Observed Line change to SOP. Will start recodring from next clock")
+          elif(start_of_packet):
+            self.logger.debug("Observed a state change from K to J. Adding 0 to Buffer")
+            data_buffer.append(0)
+            local_counter+1
+        elif(self.prev_usb_state == usb_state.J_STATE) & (current_state == usb_state.K_STATE):
+          #If it was out of reset, then a change represents a start of packet. after which we have to start recording the data
+          if(out_of_reset == 1):
+            start_of_packet = 1
+            out_of_reset    = 0
+            self.logger.debug("Observed Line change to SOP. Will start recodring from next clock")
+          elif(start_of_packet):
+            self.logger.debug("Observed a state change from J to K. Adding 0 to Buffer")
+            data_buffer.append(0)
+            local_counter+1
+        elif(self.prev_usb_state == usb_state.J_STATE) & (current_state == usb_state.J_STATE):
+          if(out_of_reset):
+            #Do Nothing as the line is just out of reset and staying Idle
+            start_of_packet = 0
+            self.logger.debug("Observed Line still in idle. Waiting for a SOP")
+          elif(start_of_packet):
+            self.logger.debug("Observed No state change from J to J. Adding 1 to Buffer")
+            data_buffer.append(1)
+            local_counter+1
+        elif(self.prev_usb_state == usb_state.K_STATE) & (current_state == usb_state.K_STATE):
+          if(out_of_reset):
+            #Do Nothing as the line is just out of reset and staying Idle
+            start_of_packet = 0
+            self.logger.debug("Observed Line still in idle. Waiting for a SOP")
+          elif(start_of_packet):
+            self.logger.debug("Observed No state change from K to K. Adding 1 to Buffer")
+            data_buffer.append(1)
+            local_counter+1
+      await self.store_current_usb()
+      if(local_counter % 8 == 0):
+        if(data_buffer == SYNC_PACKET):
+          local_counter == 0
+          data_buffer   = []
+        elif(data_buffer == READ_PID):
+          local_counter = 0
+          self.low_item.req_type = request_type.READ
+          read_req_seen = 1
+          data_buffer   = []
+        else:
+          if(read_req_seen == 1):
+            if(end_of_packet):
+              break
+          elif(write_req_seen == 1) & (write_data_seen == 1):
+            if(end_of_packet):
+              break
 
   async def decode_current_usb(self):
-    local_d_minus = self.get_bit(self.low_speed_if.d_minus, self.dev_num)
-    local_d_plus  = self.get_bit(self.low_speed_if.d_plus, self.dev_num)
-    return(usb_state(local_d_minus, local_d_plus))
+    local_d_minus = self.get_bit(self.low_speed_if.dut.device_d_minus, self.device_num)
+    local_d_plus  = self.get_bit(self.low_speed_if.dut.device_d_plus, self.device_num)
+    local_state   = 0b00
+    if(local_d_plus == "1"):
+      local_state = local_state | 0b01
+    if(local_d_minus == "1"):
+      local_state = local_state | 0b10
+    if((local_d_plus == "z") & (local_d_minus == "z")):
+      local_state = "zz"
+    current_state = usb_state(local_state)
+    return(current_state)
 
   async def store_current_usb(self):
-    self.device_d_minus_prev
+    self.prev_usb_state = self.decode_current_usb()
