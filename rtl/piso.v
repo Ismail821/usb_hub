@@ -45,7 +45,7 @@ reg receive;
 reg select=0; //to select reg2 or reg3 to send the data out
 
  
- reg [7:0] SYNC_PACKET = 8'b10000000; //send LSB out first. Assuming initial state will be J 
+ reg [7:0] SYNC_PACKET = 8'b10000001; //send LSB out first. Assuming initial state will be J 
  reg [7:0] ACK_PID = 8'b11010010; //PID for ACK is [3:0] = 0010
  reg [7:0] NAK_PID = 8'b01011010; //PID for NAK is [3:0] = 1010
  reg [7:0] READ_PID = 8'b01101001; //PID for IN token is [3:0] = 1001

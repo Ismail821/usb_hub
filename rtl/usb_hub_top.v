@@ -41,14 +41,17 @@ wire [`DEV_RANGE] trans_rcvr_request_piso_data;
 wire [NUM_USB_DEVICES*`REQUEST_SERIAL_DATA_TYPE_WIDTH-1:0] 
                   trans_rcvr_request_piso_data_type;
 wire [`DEV_RANGE] polling_clock;
+wire [`DEV_RANGE] driver_active;
 
 inout wire [NUM_USB_DEVICES*2-1:0] usb_signals;
 
 genvar i;
 generate
   for (i=0; i<NUM_USB_DEVICES; i=i+1) begin
-    assign usb_signals[(i*2)]   = device_d_plus[i];
-    assign usb_signals[(i*2)+1] = device_d_minus[i];
+    assign usb_signals[(i*2)]   =device_d_plus[i] ;
+    assign usb_signals[(i*2)+1] =device_d_minus[i];
+    assign device_d_plus[i]     = driver_active ? usb_signals[(i*2)]  : 1'bz;
+    assign device_d_minus[i]    = driver_active ? usb_signals[(i*2)+1]: 1'bz;
   end
 endgenerate
 
@@ -86,6 +89,7 @@ usb_host_trans_receiver host [`DEV_RANGE](
   .serial_data_out(),             //SIPO
   .serial_data_out_val(),         //SIPO
   .SIPO_empty(1'd0),
+  .driving_req(driver_active),
   .usb_signals(usb_signals)
 );
 

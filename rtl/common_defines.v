@@ -1,6 +1,6 @@
 //Common Macros
 
-`define SIMULATION
+// `define SIMULATION
 `define MAX_NUM_USB_DEVICES 16
 `define WIDTH_TO_RANGE(width) width-1:0
 //Usage: `def <MY_RANGE> `WIDTH_TO_RANGE(WIDTH_PARAMETER)
@@ -14,7 +14,8 @@
 `define REQUEST_SERIAL_DATA_TYPE_PASS_THROUGH `REQUEST_SERIAL_DATA_TYPE_WIDTH'h4
 `define REQUEST_SERIAL_DATA_TYPE_PID_ACK      `REQUEST_SERIAL_DATA_TYPE_WIDTH'h5
 `define REQUEST_SERIAL_DATA_TYPE_PID_NAK      `REQUEST_SERIAL_DATA_TYPE_WIDTH'h6
-
+`define USB_TR_STATE_WIDTH                    3
+`define USB_TR_STATE_RANGE                    `WIDTH_TO_RANGE(`USB_TR_STATE_WIDTH)
 
 `define ERROR(input_string)\
   $display("RTL Error: %s, from Module %m", input_string); \

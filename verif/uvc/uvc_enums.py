@@ -49,3 +49,8 @@ class DEBUG_PACKET(Enum):
   CRC_PACKET      = 0b0101
   DATA_PACKET_PID = 0b0110
   DATA_PACKET_DATA= 0b0111
+
+class usb_state(Enum):
+  J_STATE   = 0b01
+  K_STATE   = 0b10
+  #d_minus, d_plus

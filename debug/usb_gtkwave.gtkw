@@ -1,18 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Wed May  1 22:08:43 2024
+[*] Fri May  3 21:00:56 2024
 [*]
 [dumpfile] "/home/ismail/academics/usb_hub/sim_build/usb_hub_top.fst"
-[dumpfile_mtime] "Wed May  1 22:07:46 2024"
-[dumpfile_size] 2464
+[dumpfile_mtime] "Fri May  3 20:56:31 2024"
+[dumpfile_size] 4705
 [savefile] "/home/ismail/academics/usb_hub/debug/usb_gtkwave.gtkw"
-[timestart] 0
+[timestart] 9065
 [size] 1908 993
 [pos] -1 -1
-*-10.384795 100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.904153 10400 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] usb_hub_top.
-[sst_width] 214
-[signals_width] 264
+[sst_width] 267
+[signals_width] 287
 [sst_expanded] 1
 [sst_vpaned_height] 266
 @200
@@ -22,9 +22,11 @@ usb_hub_top.cycle[63:0]
 @28
 usb_hub_top.low_clock
 usb_hub_top.reset[1:0]
+(0)usb_hub_top.host_pclock_gen.polling_clock[1:0]
+(1)usb_hub_top.host_pclock_gen.polling_clock[1:0]
 @200
 -Host Signals
-@800200
+@c00200
 -Host Signals
 @28
 usb_hub_top.host_d_plus
@@ -32,12 +34,13 @@ usb_hub_top.host_d_minus
 @2028
 ^1 /home/ismail/academics/usb_hub/debug/debug_state.txt
 usb_hub_top.host_low_packet_state[3:0]
-@1000200
+@1401200
 -Host Signals
 @200
 -====Device Signals====
 @800200
 -Device Signals
+@c00200
 -Device 0
 @28
 (1)usb_hub_top.reset[1:0]
@@ -63,6 +66,7 @@ usb_hub_top.host_speed_detector[0].j_state[1:0]
 usb_hub_top.host_speed_detector[0].k_state[1:0]
 @1000200
 -States
+@1401200
 -Device 0
 @800200
 -Device 1
@@ -82,24 +86,110 @@ usb_hub_top.host_speed_detector[0].k_state[1:0]
 -group_end
 @28
 (0)usb_hub_top.host_pclock_gen.polling_clock[1:0]
-@800200
+@c00200
 -States
 @28
 usb_hub_top.host_speed_detector[1].idle_state[1:0]
 usb_hub_top.host_speed_detector[1].k_state[1:0]
 usb_hub_top.host_speed_detector[1].j_state[1:0]
-@1000200
+@1401200
 -States
+@1000200
 -Device 1
 -Device Signals
-@22
-usb_hub_top.usb_signals[3:0]
+@c00200
+-Debug
 @28
-usb_hub_top.device_d_plus[1:0]
-usb_hub_top.device_d_minus[1:0]
-usb_hub_top.host[1].usb_signals_reg[1:0]
-usb_hub_top.host[1].usb_signals[1:0]
-@29
+usb_hub_top.host[1].polling_clock
+usb_hub_top.host[1].polling_clock_d1
 usb_hub_top.host[1].request_ongoing
+@22
+usb_hub_top.host_piso[1].reg2[7:0]
+@28
+usb_hub_top.host_piso[1].send_data2
+@22
+usb_hub_top.host_piso[1].count2[7:0]
+@28
+usb_hub_top.host[1].usb_signals_reg[1:0]
+usb_hub_top.host[1].output_usb_state[2:0]
+@1401200
+-Debug
+@c00200
+-Speed Detector Debug
+@28
+usb_hub_top.host_speed_detector[1].reset
+@24
+usb_hub_top.host_speed_detector[1].reset_counter[4:0]
+@28
+usb_hub_top.host_speed_detector[1].usb_signals[1:0]
+usb_hub_top.host_speed_detector[1].k_state[1:0]
+usb_hub_top.host_speed_detector[1].j_state[1:0]
+usb_hub_top.host_speed_detector[1].idle_state[1:0]
+@1401200
+-Speed Detector Debug
+@c00200
+-Piso Debug
+@28
+usb_hub_top.host_piso[1].request_serial_data
+usb_hub_top.host_piso[1].request_serial_data_type[2:0]
+usb_hub_top.host_piso[1].sync
+usb_hub_top.host_piso[1].reg2_empty
+@22
+usb_hub_top.host_piso[1].reg2[7:0]
+@28
+usb_hub_top.host_piso[1].send_data2
+usb_hub_top.host_piso[1].tx
+usb_hub_top.host_piso[1].tx2
+usb_hub_top.host_piso[1].piso_data_out
+usb_hub_top.host_piso[1].piso_data_val
+@1401200
+-Piso Debug
+@800200
+-USB Trns Debug
+@28
+usb_hub_top.host[1].request_serial_data
+@24
+usb_hub_top.host[1].request_serial_data_type[2:0]
+@28
+usb_hub_top.host[1].request_ongoing
+usb_hub_top.host[1].request_ongoing_d1
+usb_hub_top.host[1].serial_data_in_val
+@29
+usb_hub_top.host[1].serial_data_in
+@28
+usb_hub_top.host[1].serial_data_in_last
+usb_hub_top.host[1].serial_data_in_val
+usb_hub_top.host[1].serial_data_in_val_d1
+@2028
+^2 /home/ismail/academics/usb_hub/debug/usb_tr_state_encoding.txt
+usb_hub_top.host[1].output_usb_state[2:0]
+^2 /home/ismail/academics/usb_hub/debug/usb_tr_state_encoding.txt
+usb_hub_top.host[1].output_usb_state_d1[2:0]
+@c02028
+^3 /home/ismail/academics/usb_hub/debug/usb_signal.txt
+usb_hub_top.host[1].usb_signals_reg[1:0]
+@28
+(0)usb_hub_top.host[1].usb_signals_reg[1:0]
+(1)usb_hub_top.host[1].usb_signals_reg[1:0]
+@1401200
+-group_end
+@c00028
+usb_hub_top.host[1].usb_signals[1:0]
+@28
+(0)usb_hub_top.host[1].usb_signals[1:0]
+(1)usb_hub_top.host[1].usb_signals[1:0]
+@1401200
+-group_end
+@28
+usb_hub_top.host[1].usb_signals_reg[1:0]
+usb_hub_top.host[1].reset_done[2:0]
+usb_hub_top.host[1].reset
+usb_hub_top.host[1].reset_d1
+usb_hub_top.host[1].response_ongoing
+usb_hub_top.host[1].J_state[1:0]
+usb_hub_top.host[1].idle_state[1:0]
+usb_hub_top.host[1].K_state[1:0]
+@1000200
+-USB Trns Debug
 [pattern_trace] 1
 [pattern_trace] 0
