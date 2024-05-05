@@ -145,7 +145,7 @@ class USB_lowspeed_device_driver(uvm_driver):
 
     for i in range (no_bits):
       self.logger.debug("Starting to drive signal bit [\"%0d\"] = %0d",i, self.get_bit(data, i))
-      if(self.get_bit(data, i) == 0):
+      if(self.get_bit(data, i) == "0"):
         bit_mask = self.get_bit_mask(self.low_item.device_number)
         set_if_bit(bit_mask=bit_mask)
       drive_if_bits(value=1)
@@ -154,8 +154,8 @@ class USB_lowspeed_device_driver(uvm_driver):
   def get_bit(self, value, n):
     # str(value)
     dev_value = list(str(value))
-    self.logger.info("List value is %s", dev_value[0:])
-    self.logger.debug("Returning Char value[%0d] = %s from %s",n ,dev_value[self.NUM_DEVICES - n - 1], str(value))
+    # self.logger.info("List value is %s", dev_value[0:])
+    # self.logger.debug("Returning Char value[%0d] = %s from %s",n ,dev_value[self.NUM_DEVICES - n - 1], str(value))
     return (dev_value[self.NUM_DEVICES - n - 1])
 
   def get_bit_mask(self, bit_positon):
@@ -201,6 +201,7 @@ class USB_lowspeed_device_driver(uvm_driver):
     reset_timer     = 0
     local_counter   = 0
     out_of_reset    = 0
+    start_of_packet = 0
     data_buffer     = []
     read_req_seen   = 0
     write_req_seen  = 0
@@ -211,7 +212,8 @@ class USB_lowspeed_device_driver(uvm_driver):
     while True:
       await RisingEdge(self.low_speed_if.dut.low_clock)
       current_state = await self.decode_current_usb()
-      self.logger.info("Current state = %s", current_state.name)
+      self.logger.info("Current state of dev[%0d] is %s, prev_state is %s",
+                         self.device_num, current_state.name, self.prev_usb_state.name)
       if(current_state == usb_state.SE0):
         if(self.prev_usb_state == usb_state.SE0):
           end_of_packet  = 1
@@ -220,6 +222,7 @@ class USB_lowspeed_device_driver(uvm_driver):
         reset_timer-1
       else:
         reset_timer = 0
+        self.logger.debug("Current USB in Differential State of %s, Prev usb is state of %s", current_state.name, self.prev_usb_state.name)
         if(self.prev_usb_state == usb_state.Z) & (current_state == usb_state.J_STATE):
           #Line Just Intialized from Z to J_State(Idle)
           out_of_reset = 1
@@ -294,4 +297,5 @@ class USB_lowspeed_device_driver(uvm_driver):
     return(current_state)
 
   async def store_current_usb(self):
-    self.prev_usb_state = self.decode_current_usb()
+    self.prev_usb_state = await self.decode_current_usb()
+    self.logger.debug("Storing current usb_state as %s", self.prev_usb_state.name)
