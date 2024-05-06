@@ -30,8 +30,6 @@ module usb_host_trans_receiver #(
   output  serial_data_out,
   output  serial_data_out_val,
 
-  input   SIPO_empty,
-  
   output  driving_req,
   //The inout signals that will be driven. it's a concatination of d+ and d-
   inout   wire [1:0] usb_signals
@@ -41,38 +39,47 @@ module usb_host_trans_receiver #(
   reg serial_data_out;
   reg serial_data_out_val;
   reg request_serial_data;
-  
+
   ///Flags that'll be used for inter block communications
   reg request_ongoing;
   reg request_ongoing_d1;
-  reg response_ongoing;
+  reg request_ongoing_d2;
+  reg request_ongoing_d3;
+  reg [1:0] response_ongoing;
   reg response_ongoing_d1;
   reg reset_d1;
   reg [`USB_TR_STATE_RANGE] output_usb_state;
   reg [`USB_TR_STATE_RANGE] output_usb_state_d1 = 0;
   reg [`USB_TR_STATE_RANGE] reset_done;
   reg driving_req;
-  
+  reg start_of_packet;
+
   //Some flopped signals for Storing prev values
   reg [1:0] j_state;
   reg [1:0] k_state;
   reg [1:0] idle_state;
+  reg [1:0] se0 = 2'b0;
+  reg [1:0] se1 = 2'b1;
   reg serial_data_out_val_d1;
   reg serial_data_in_val_d1;
+  reg serial_data_in_val_d2;
+  reg serial_data_in_last_d1;
   reg polling_clock_d1;
-  
+  reg skip_read_address;
+  reg [1:0] usb_state_prev1;
+
   reg [1:0] usb_signals_reg;
-  
+
   parameter USB_TR_STATE_NULL     = `USB_TR_STATE_WIDTH'h0;
   parameter USB_TR_STATE_TOGGLE   = `USB_TR_STATE_WIDTH'h1;
   parameter USB_TR_STATE_IDLE     = `USB_TR_STATE_WIDTH'h2;
   parameter USB_TR_STATE_Z        = `USB_TR_STATE_WIDTH'h3;
   parameter USB_TR_STATE_RESET    = `USB_TR_STATE_WIDTH'h4;
   parameter USB_TR_STATE_NOTOGGLE = `USB_TR_STATE_WIDTH'h5;
-  
-  assign driving_req = request_ongoing | request_ongoing_d1; 
+
+  assign driving_req = request_ongoing | request_ongoing_d1 | request_ongoing_d2 | request_ongoing_d3; 
   assign usb_signals = driving_req ? usb_signals_reg : 2'bz;
-  
+
   //State Variables for the Request Thread and Response Thread.
   always @(*) begin
     j_state     <= J_state;
@@ -82,29 +89,35 @@ module usb_host_trans_receiver #(
   always @(posedge clock) begin
     polling_clock_d1      <= polling_clock;
     serial_data_in_val_d1 <= serial_data_in_val;
+    serial_data_in_val_d2 <= serial_data_in_val_d1;
     request_ongoing_d1    <= request_ongoing;
+    request_ongoing_d2    <= request_ongoing_d1;
+    request_ongoing_d3    <= request_ongoing_d2;
     response_ongoing_d1   <= response_ongoing;
+    serial_data_in_last_d1<= serial_data_in_last;
     reset_d1              <= reset;
+    usb_state_prev1       <= usb_signals;     
   end
-  
+
   always @(reset) begin
     if((reset_d1 == 1) & (reset == 0)) begin
       reset_done            =  {`USB_TR_STATE_WIDTH{1'b1}};
     end
   end
-  
+
   //Request Data threat, sets the output_usb_state flag Receives the data from the serial input
   //and sets the output_usb_state accordingly.
   always @(posedge clock) begin
     if(reset) begin
       request_ongoing           = 0;
-      response_ongoing          = 0;
+      response_ongoing          = 2'b0;
       output_usb_state          = USB_TR_STATE_RESET;
       request_serial_data       = 0;
       request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_NULL;
+      skip_read_address         = 0;
     end else begin
-      if(polling_clock && ~polling_clock_d1) begin
-        if(~response_ongoing && ~request_ongoing) begin
+      if((polling_clock && ~polling_clock_d1) | serial_data_in_avail) begin
+        if(~&response_ongoing && ~request_ongoing) begin
           request_serial_data       = 1;
           request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_SYNC;
           request_ongoing           = 1;
@@ -121,7 +134,7 @@ module usb_host_trans_receiver #(
           `ERROR("Request is ongoing but Data isn't available")
         end
   `endif
-        if(serial_data_in_last) begin
+        if(serial_data_in_last_d1) begin
           case(request_serial_data_type)
           `REQUEST_SERIAL_DATA_TYPE_SYNC: begin
             request_serial_data       = 1;
@@ -131,11 +144,26 @@ module usb_host_trans_receiver #(
           `REQUEST_SERIAL_DATA_TYPE_PID_READ:  begin
             request_serial_data       = 1;
             request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_READ_ADDRESS;
+            skip_read_address         = 1;
           end
           `REQUEST_SERIAL_DATA_TYPE_READ_ADDRESS: begin
-            request_ongoing      = 0;
-            response_ongoing     = 1;
-            request_serial_data  = 0;
+            if(skip_read_address) begin
+              skip_read_address = 0;
+            end else begin
+              request_ongoing      = 0;
+              response_ongoing     = 2'b11;
+              request_serial_data  = 0;
+            end
+          end
+          `REQUEST_SERIAL_DATA_TYPE_PASS_THROUGH: begin
+            if(serial_data_in_avail == 0) begin
+              request_ongoing      = 0;
+              response_ongoing     = 2'b11;
+              request_serial_data  = 0;
+            end else begin
+              request_serial_data       = 1;
+              request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_PASS_THROUGH; 
+            end
           end
           endcase
         end else begin
@@ -150,16 +178,22 @@ module usb_host_trans_receiver #(
     end
     output_usb_state_d1   <= output_usb_state;
   end
-  
+
+  //Request Data Driving Case Threat
   always @(posedge clock) begin
     // if(reset_done) begin
+      if(reset) begin
+        usb_signals_reg = 2'b0;
+      end
       case (output_usb_state_d1 & reset_done)
       USB_TR_STATE_IDLE: begin
-         if(serial_data_in_val && ~serial_data_in_val_d1) begin
-           usb_signals_reg <= k_state;
-         end else begin
+        if(serial_data_in_val && ~serial_data_in_val_d1) begin
+          usb_signals_reg <= k_state;
+        end else if(serial_data_in_val_d2 && ~serial_data_in_val_d1) begin
+          usb_signals_reg <= 2'b0;
+        end else begin
           usb_signals_reg <= idle_state;
-         end
+        end
       end
       USB_TR_STATE_TOGGLE: begin
         if(usb_signals_reg == j_state) begin
@@ -181,5 +215,37 @@ module usb_host_trans_receiver #(
       endcase
     // end
   end
+  
+  //Response Data Decoding Threat
+  always @(posedge clock) begin
+    case (usb_signals & response_ongoing)
+      k_state, 
+      j_state: begin //{
+        if((usb_state_prev1 == j_state) &&
+           (usb_signals     == k_state) &&
+           (start_of_packet == 0)
+          ) begin
+          start_of_packet = 1;
+        end else if(start_of_packet) begin //{
+          if(usb_state_prev1 == usb_signals) begin
+            serial_data_out     <= 1;
+            serial_data_out_val <= 1;
+          end else begin
+            serial_data_out     <= 0;
+            serial_data_out_val <= 1;
+          end
+        end //}
+      end //}
+      se0: begin //{
+        start_of_packet = 0;
+        serial_data_out_val <= 0;
+      end //}
+      se1: begin //{
+      end//}
+      default: begin
+      end
+    endcase
+  end
+
 
 endmodule
