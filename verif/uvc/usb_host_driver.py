@@ -1,4 +1,5 @@
 from cocotb.triggers import RisingEdge
+from cocotb.binary import *
 from pyuvm import uvm_driver
 from pyuvm import uvm_analysis_port
 from pyuvm import UVMError
@@ -54,6 +55,8 @@ class USB_hispeed_driver(uvm_driver):
 
 class USB_lowspeed_host_driver(uvm_driver):
 
+  NUM_DEVICES = 1
+
   def __init__(self, name, uvc_cfg, lowspeed_if, i, parent):
     self.low_speed_if = lowspeed_if
     self.uvc_cfg      = uvc_cfg
@@ -71,6 +74,7 @@ class USB_lowspeed_host_driver(uvm_driver):
     super().connect_phase()
 
   async def run_phase(self):
+    await self.reset_all_devices()
     while True:
       self.hi_item = USB_Lowspeed_Data_Seq_Item("Driver_hi_item")
       self.logger.info("Waiting for sequence item")
@@ -109,16 +113,17 @@ class USB_lowspeed_host_driver(uvm_driver):
     #Whatever the Start signal condition is
 
   async def sync_packets(self):
-    for i in range (6):
-      await RisingEdge(self.low_speed_if.dut.low_clock)
-      self.low_speed_if.dut.host_low_packet_state.value = DEBUG_PACKET.SYNC_PACKET.value
-      self.logger.debug("Driving J in Low_clock")
-      self.low_speed_if.dut.host_d_minus.value = 0
-      self.low_speed_if.dut.host_d_plus.value  = 1
-      await RisingEdge(self.low_speed_if.dut.low_clock)
-      self.logger.debug("Driving k in Low_clock")
-      self.low_speed_if.dut.host_d_minus.value = 1
-      self.low_speed_if.dut.host_d_plus.value  = 0
+    await self.drive_signal(0b10000001,8)
+    # for i in range (6):
+    #   await RisingEdge(self.low_speed_if.dut.low_clock)
+    #   self.low_speed_if.dut.host_low_packet_state.value = DEBUG_PACKET.SYNC_PACKET.value
+    #   self.logger.debug("Driving J in Low_clock")
+    #   self.low_speed_if.dut.host_d_minus.value = 0
+    #   self.low_speed_if.dut.host_d_plus.value  = 1
+    #   await RisingEdge(self.low_speed_if.dut.low_clock)
+    #   self.logger.debug("Driving k in Low_clock")
+    #   self.low_speed_if.dut.host_d_minus.value = 1
+    #   self.low_speed_if.dut.host_d_plus.value  = 0
 
   async def start_token_packet(self):
     self.logger.debug("Starting driving PID Bits")
@@ -155,17 +160,45 @@ class USB_lowspeed_host_driver(uvm_driver):
 
   async def drive_signal(self, data, no_bits):
     def get_bit(value, n):
-      int(value)
-      str(value)
-      # self.logger.debug("Get Bits: ", value)
-      return ((value >> n & 1) != 0)
+      return (value >> n & 1)
 
+    self.low_speed_if.dut.host_d_plus.value   =  0
+    self.low_speed_if.dut.host_d_minus.value  =  1
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+    self.low_speed_if.dut.host_d_plus.value   =  1
+    self.low_speed_if.dut.host_d_minus.value  =  0
+    await RisingEdge(self.low_speed_if.dut.low_clock)
     for i in range (no_bits):
-      self.logger.debug("Starting to drive signal bit ["+ str(i) + "]" + str(get_bit(data, i)))
-      if(get_bit(data, i)):
-        self.low_speed_if.dut.host_d_plus.value   =  get_bit(self.low_speed_if.dut.host_d_plus.value,  0) & 1
-        self.low_speed_if.dut.host_d_minus.value  =  get_bit(self.low_speed_if.dut.host_d_minus.value, 0) & 1
-      else:
-        self.low_speed_if.dut.host_d_plus.value   = ~get_bit(self.low_speed_if.dut.host_d_plus.value,  0) & 1
-        self.low_speed_if.dut.host_d_minus.value  = ~get_bit(self.low_speed_if.dut.host_d_minus.value, 0) & 1
+      self.logger.debug("Starting to drive signal bit [%0d] = %1b", i, + get_bit(data, i))
+      if(get_bit(data, i) == 0):
+        self.low_speed_if.dut.host_d_plus.value   = self.low_speed_if.dut.host_d_plus.value  ^ 0b1
+        self.low_speed_if.dut.host_d_minus.value  = self.low_speed_if.dut.host_d_minus.value ^ 0b1
       await RisingEdge(self.low_speed_if.dut.low_clock)
+    self.low_speed_if.dut.host_d_plus.value   =  0
+    self.low_speed_if.dut.host_d_minus.value  =  0
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+
+  async def reset_all_devices(self):
+    for i in range (40):
+      await RisingEdge(self.low_speed_if.dut.low_clock)
+      self.low_speed_if.dut.host_d_plus  = 0
+      self.low_speed_if.dut.host_d_minus = 0
+  
+  async def z_all_devices(self):
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+    z_str = "z"
+    for i in range (self.NUM_DEVICES - 1):
+      z_str = z_str + "z"
+    self.logger.info(z_str)
+    self.low_speed_if.dut.host_d_plus  = BinaryValue(z_str, self.NUM_DEVICES)
+    self.low_speed_if.dut.host_d_minus = BinaryValue(z_str, self.NUM_DEVICES)
+
+  async def idle_all_devices(self, dev_num=0):
+    idle_state = 0
+    for i in range (self.NUM_DEVICES):
+      idle_state = idle_state << 1 | 0b1
+    for i in range (2):
+      await RisingEdge(self.low_speed_if.dut.low_clock)
+      self.low_speed_if.dut.host_d_plus  = 0
+      self.low_speed_if.dut.host_d_minus = idle_state
+    await self.z_all_devices()

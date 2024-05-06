@@ -1,7 +1,7 @@
 
 module usb_host_trans_receiver #(
   //parameters
-  parameter DUMMY_PARAM = 0
+  parameter HOST = 0
 ) (
   //=================== I/O Signals =============================
   //-----------------Common Signals------------------------------
@@ -123,6 +123,11 @@ module usb_host_trans_receiver #(
           request_ongoing           = 1;
         end
       end
+      if(HOST == 1) begin
+        if(~&response_ongoing && ~request_ongoing) begin
+          response_ongoing = 2'b11;
+        end
+      end
       if(request_ongoing_d1) begin
         if(serial_data_in_val) begin
           output_usb_state   = serial_data_in ? USB_TR_STATE_NOTOGGLE : USB_TR_STATE_TOGGLE;
@@ -218,6 +223,10 @@ module usb_host_trans_receiver #(
   
   //Response Data Decoding Threat
   always @(posedge clock) begin
+    if(reset) begin
+      serial_data_out <= 0;
+      serial_data_out_val <= 0;
+    end
     case (usb_signals & response_ongoing)
       k_state, 
       j_state: begin //{

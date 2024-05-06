@@ -1,20 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Fri May  3 21:00:56 2024
+[*] Mon May  6 15:33:12 2024
 [*]
 [dumpfile] "/home/ismail/academics/usb_hub/sim_build/usb_hub_top.fst"
-[dumpfile_mtime] "Fri May  3 20:56:31 2024"
-[dumpfile_size] 4705
+[dumpfile_mtime] "Mon May  6 15:06:19 2024"
+[dumpfile_size] 7000
 [savefile] "/home/ismail/academics/usb_hub/debug/usb_gtkwave.gtkw"
-[timestart] 9065
+[timestart] 3419
 [size] 1908 993
 [pos] -1 -1
-*-8.904153 10400 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-9.895630 9800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] usb_hub_top.
-[sst_width] 267
+[sst_width] 258
 [signals_width] 287
 [sst_expanded] 1
-[sst_vpaned_height] 266
+[sst_vpaned_height] 372
 @200
 -Clocks and Cycle
 @24
@@ -26,7 +26,7 @@ usb_hub_top.reset[1:0]
 (1)usb_hub_top.host_pclock_gen.polling_clock[1:0]
 @200
 -Host Signals
-@c00200
+@800200
 -Host Signals
 @28
 usb_hub_top.host_d_plus
@@ -34,13 +34,12 @@ usb_hub_top.host_d_minus
 @2028
 ^1 /home/ismail/academics/usb_hub/debug/debug_state.txt
 usb_hub_top.host_low_packet_state[3:0]
-@1401200
+@1000200
 -Host Signals
 @200
 -====Device Signals====
 @800200
 -Device Signals
-@c00200
 -Device 0
 @28
 (1)usb_hub_top.reset[1:0]
@@ -66,12 +65,15 @@ usb_hub_top.host_speed_detector[0].j_state[1:0]
 usb_hub_top.host_speed_detector[0].k_state[1:0]
 @1000200
 -States
-@1401200
 -Device 0
 @800200
 -Device 1
 @28
 (0)usb_hub_top.reset[1:0]
+@2028
+^3 /home/ismail/academics/usb_hub/debug/usb_signal.txt
+usb_hub_top.host[1].usb_signals[1:0]
+@28
 (0)usb_hub_top.device_d_plus[1:0]
 (0)usb_hub_top.device_d_minus[1:0]
 @100c02028
@@ -144,7 +146,7 @@ usb_hub_top.host_piso[1].piso_data_out
 usb_hub_top.host_piso[1].piso_data_val
 @1401200
 -Piso Debug
-@800200
+@c00200
 -USB Trns Debug
 @28
 usb_hub_top.host[1].request_serial_data
@@ -154,9 +156,7 @@ usb_hub_top.host[1].request_serial_data_type[2:0]
 usb_hub_top.host[1].request_ongoing
 usb_hub_top.host[1].request_ongoing_d1
 usb_hub_top.host[1].serial_data_in_val
-@29
 usb_hub_top.host[1].serial_data_in
-@28
 usb_hub_top.host[1].serial_data_in_last
 usb_hub_top.host[1].serial_data_in_val
 usb_hub_top.host[1].serial_data_in_val_d1
@@ -185,11 +185,77 @@ usb_hub_top.host[1].usb_signals_reg[1:0]
 usb_hub_top.host[1].reset_done[2:0]
 usb_hub_top.host[1].reset
 usb_hub_top.host[1].reset_d1
-usb_hub_top.host[1].response_ongoing
 usb_hub_top.host[1].J_state[1:0]
 usb_hub_top.host[1].idle_state[1:0]
 usb_hub_top.host[1].K_state[1:0]
-@1000200
+@1401200
 -USB Trns Debug
+@c00200
+-Fifo 1 Debug
+@28
+usb_hub_top.dev_fifo[1].rd_en
+@22
+usb_hub_top.dev_fifo[1].rd_ptr[3:0]
+usb_hub_top.dev_fifo[1].sum[15:0]
+usb_hub_top.dev_fifo[1].w_data[7:0]
+usb_hub_top.dev_fifo[1].wr_ptr[3:0]
+@28
+usb_hub_top.dev_fifo[1].wr_en
+usb_hub_top.dev_fifo[1].flag_empty
+usb_hub_top.dev_fifo[1].flag_full
+@1401200
+-Fifo 1 Debug
+@c00200
+-Sipo 1 Debug
+@28
+usb_hub_top.dev_sipo[1].s_data_in
+usb_hub_top.dev_sipo[1].s_data_in_val
+@22
+usb_hub_top.dev_sipo[1].shift_reg1[7:0]
+usb_hub_top.dev_sipo[1].shift_reg2[7:0]
+usb_hub_top.dev_sipo[1].p_data_out[7:0]
+@28
+usb_hub_top.dev_sipo[1].p_data_out_val
+@1401200
+-Sipo 1 Debug
+@c00200
+-host_usb_tr_debug
+@28
+usb_hub_top.dev_trans_receiver.request_ongoing
+usb_hub_top.dev_trans_receiver.request_ongoing_d1
+usb_hub_top.dev_trans_receiver.request_ongoing_d2
+usb_hub_top.dev_trans_receiver.request_ongoing_d3
+usb_hub_top.dev_trans_receiver.request_serial_data
+usb_hub_top.dev_trans_receiver.request_serial_data_type[2:0]
+usb_hub_top.dev_trans_receiver.response_ongoing[1:0]
+usb_hub_top.dev_trans_receiver.response_ongoing_d1
+usb_hub_top.dev_trans_receiver.serial_data_in_avail
+@2028
+>9
+^3 /home/ismail/academics/usb_hub/debug/usb_signal.txt
+usb_hub_top.dev_trans_receiver.usb_signals[1:0]
+@28
+>0
+usb_hub_top.dev_trans_receiver.serial_data_out
+usb_hub_top.dev_trans_receiver.serial_data_out_val
+@1401200
+-host_usb_tr_debug
+@28
+usb_hub_top.host_sipo[1].s_data_in_val
+@29
+usb_hub_top.host_fifo[1].flag_empty
+@28
+usb_hub_top.host_sipo[1].s_data_in
+usb_hub_top.host_sipo[1].sipo_cancel
+usb_hub_top.host_piso[1].data_avail
+usb_hub_top.host_sipo[1].p_data_out_val
+usb_hub_top.host_sipo[1].p_data_out[7:0]
+usb_hub_top.host_fifo[1].flag_empty
+usb_hub_top.host_piso[1].request_data
+usb_hub_top.host_piso[1].piso_data_val
+usb_hub_top.host_piso[1].piso_data_last
+usb_hub_top.host_piso[1].request_serial_data
+@24
+usb_hub_top.host_piso[1].request_serial_data_type[2:0]
 [pattern_trace] 1
 [pattern_trace] 0

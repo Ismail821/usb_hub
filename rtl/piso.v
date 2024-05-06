@@ -93,6 +93,7 @@ always@(posedge clk) begin
     address<=0;
     fifo_data<=0;
     serial_counter<=0;
+		serial_data_available <= 0;
   end
   else begin 
         if(request_serial_data && (reg2_empty || reg3_empty))begin //and either reg2 or 3 should be empty

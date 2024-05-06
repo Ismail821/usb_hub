@@ -56,6 +56,10 @@ wire [`DEV_RANGE] dev_fifo_full;
 wire [`DEV_RANGE] dev_fifo_empty;
 wire [NUM_USB_DEVICES*8-1:0] dev_fifo_rd_data;
 wire [`DEV_RANGE] dev_piso_req_data;
+wire [NUM_USB_DEVICES*8-1:0] host_sipo_data_out;
+wire host_sipo_data_out_val;
+wire dev_usb_tr_data_out;
+wire dev_usb_tr_data_out_val;
 
 //Mux Inputs and outputs
 wire [`DEV_RANGE] dev_piso_data_out;
@@ -71,7 +75,7 @@ wire dev_usb_tr_piso_data_val;
 wire dev_usb_tr_piso_data_last;
 wire dev_usb_tr_piso_serial_data_avail;
 wire dev_usb_tr_piso_request_serial_data;
-wire dev_usb_tr_piso_request_serial_data_type;
+wire [`REQUEST_SERIAL_DATA_TYPE_WIDTH-1:0]dev_usb_tr_piso_request_serial_data_type;
 
 always @(*) begin
   driver_active_d1 <= driver_active;
@@ -141,8 +145,8 @@ piso host_piso [`DEV_RANGE] (
 fifo host_fifo [`DEV_RANGE] (
   .clk(low_clock),
   .rst(reset),
-  .w_data(8'b0),
-  .wr_en(1'b0),
+  .w_data(host_sipo_data_out),
+  .wr_en(host_sipo_data_out_val),
   .flag_full(),
   .r_data(fifo_rd_data),
   .rd_en(piso_request_data),
@@ -174,14 +178,14 @@ piso dev_piso[`DEV_RANGE] (
   .clk(low_clock),
   .rst(reset),
   .piso_data_in(dev_fifo_rd_data),
-  .data_avail(~dev_fifo_full),
+  .data_avail(~dev_fifo_empty),
   .request_data(dev_piso_req_data),
   .request_serial_data(dev_piso_request_serial_data),
   .request_serial_data_type(dev_piso_request_serial_data_type),
   .serial_data_available(dev_piso_serial_data_avail),
   .piso_data_out(dev_piso_data_out),
-  .piso_data_val(),
-  .piso_data_last()
+  .piso_data_val(dev_piso_data_val),
+  .piso_data_last(dev_piso_data_last)
 );
 
 usb_piso_tr_mux #(
@@ -201,10 +205,10 @@ usb_piso_tr_mux #(
   .usb_tr_request_serial_data_type(dev_usb_tr_piso_request_serial_data_type)
 );
 
-usb_host_trans_receiver dev_trans_receiver (
+usb_host_trans_receiver #(.HOST(1)) dev_trans_receiver (
  .clock(low_clock),
  .polling_clock(),
- .reset(reset),
+ .reset(|reset),
  .IDLE_state(2'b10),
  .J_state(2'b10),
  .K_state(2'b01),
@@ -214,10 +218,20 @@ usb_host_trans_receiver dev_trans_receiver (
  .serial_data_in_avail(dev_usb_tr_piso_serial_data_avail),
  .request_serial_data(dev_usb_tr_piso_request_serial_data),
  .request_serial_data_type(dev_usb_tr_piso_request_serial_data_type),
- .serial_data_out(),    //To Host SIPO
- .serial_data_out_val(),
+ .serial_data_out(dev_usb_tr_data_out),    //To Host SIPO
+ .serial_data_out_val(dev_usb_tr_data_out_val),
  .driving_req(),
  .usb_signals({host_d_minus, host_d_plus})
+);
+
+sipo host_sipo [`DEV_RANGE] (
+  .clk(low_clock),
+  .rst(|reset),
+  .s_data_in(dev_usb_tr_data_out),
+  .s_data_in_val(dev_usb_tr_data_out_val),
+  .sipo_cancel(),     //add seq_detect
+  .p_data_out(host_sipo_data_out),
+  .p_data_out_val(host_sipo_data_out_val)
 );
 
 endmodule
