@@ -6,6 +6,7 @@
 `include "rtl/fifo.v"
 `include "rtl/piso.v"
 `include "rtl/polling_clock_gen.v"
+`include "rtl/sequence_detector.v"
 `include "rtl/sipo.v"
 `include "rtl/usb_host_speed_detector.v"
 `include "rtl/usb_mux.v"

@@ -1,6 +1,7 @@
 CWD=$(shell pwd)
 export COCOTB_REDUCED_LOG_FMT = 0
 SIM ?= icarus
+# SIM ?= verilator
 TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES += $(CWD)/rtl/usb_hub_top.v
 ##Need to add the Remaining RTL files ones created

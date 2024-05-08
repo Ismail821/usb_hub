@@ -36,6 +36,11 @@ class USB_lowspeed_device_driver(uvm_driver):
     self.logger.info("Resetting All the Devices")
     await self.reset_all_devices()
     await self.idle_all_devices()
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+    self.low_speed_if.d_plus  = BinaryValue(str(self.low_speed_if.dut.device_d_plus), self.NUM_DEVICES)
+    self.low_speed_if.d_minus = BinaryValue(str(self.low_speed_if.dut.device_d_minus), self.NUM_DEVICES)
+    self.logger.debug("current if variable value before driving = " + str(self.low_speed_if.d_plus) +" " + str(self.low_speed_if.d_minus))
     self.logger.info("All Device lines set to Idle and to Z.")
     while True:
       self.low_item = USB_Lowspeed_Data_Seq_Item("Driver_low_item")
@@ -80,9 +85,9 @@ class USB_lowspeed_device_driver(uvm_driver):
   async def initialize_port(self):
     self.logger.debug("Initializing Port, Waiting for a Raising Edge of Clock")
     await RisingEdge(self.low_speed_if.dut.low_clock)
-    self.logger.debug("Setting Port to SE1")
-    self.low_speed_if.d_minus  = 3
-    self.low_speed_if.d_plus   = 0
+    self.logger.debug("Setting Port to Idle (J State)")
+    self.low_speed_if.d_minus[self.NUM_DEVICES - self.device_num -1]  = 1
+    self.low_speed_if.d_plus[self.NUM_DEVICES - self.device_num -1 ]  = 0
 
   async def sync_packets(self):
     await RisingEdge(self.low_speed_if.dut.low_clock)
@@ -131,23 +136,31 @@ class USB_lowspeed_device_driver(uvm_driver):
       return ((value >> n & 1))
 
     def set_if_bit(bit_mask, J=None, SE0=None):
+      n = self.NUM_DEVICES - self.device_num - 1
       device_list = 0
       for i in range (self.NUM_DEVICES):
         device_list = device_list << 1 | 0b1
       self.logger.debug("Bit_mask = " + bin(bit_mask) + ", device_list = " + bin(device_list))
       self.logger.debug("current interface value before driving = " + str(self.low_speed_if.dut.device_d_plus))
-      self.logger.debug("current if variable value before driving = " + bin(self.low_speed_if.d_plus))
+      self.logger.debug("current if variable value before driving = " + str(self.low_speed_if.d_plus) +" " + str(self.low_speed_if.d_minus))
       if(J is not None):
-        self.low_speed_if.d_plus  = self.low_speed_if.d_plus  & (~bit_mask & device_list)
-        self.low_speed_if.d_minus = self.low_speed_if.d_minus | ((~bit_mask & device_list) | device_list)
+        self.low_speed_if.d_plus[n] = 0
+        self.low_speed_if.d_minus[n] = 1
+        # self.low_speed_if.d_plus  = self.low_speed_if.d_plus  & (~bit_mask & device_list)
+        # self.low_speed_if.d_minus = self.low_speed_if.d_minus | ((~bit_mask & device_list) | device_list)
       elif(SE0 is not None):
-        self.low_speed_if.d_plus  = self.low_speed_if.d_plus  & (~bit_mask & device_list)
-        self.low_speed_if.d_minus = self.low_speed_if.d_minus & (~bit_mask & device_list)
+        self.low_speed_if.d_plus[n] = 0
+        self.low_speed_if.d_minus[n] = 0
+        # self.low_speed_if.d_plus  = self.low_speed_if.d_plus  & (~bit_mask & device_list)
+        # self.low_speed_if.d_minus = self.low_speed_if.d_minus & (~bit_mask & device_list)
       else:
-        self.low_speed_if.d_plus   = (self.low_speed_if.d_plus ) ^ (bit_mask & device_list)
-        self.low_speed_if.d_minus  = (self.low_speed_if.d_minus) ^ (bit_mask & device_list)
-      self.logger.debug("current interface value should after driving = " + bin((self.low_speed_if.d_plus)))
-      self.logger.debug("current interface value should after driving = " + bin((self.low_speed_if.d_minus)))
+        self.low_speed_if.d_plus[n]  = ~self.low_speed_if.d_plus[n]
+        self.low_speed_if.d_minus[n] = ~self.low_speed_if.d_minus[n]
+        # self.low_speed_if.d_plus   = (self.low_speed_if.d_plus ) ^ (bit_mask & device_list)
+        # self.low_speed_if.d_minus  = (self.low_speed_if.d_minus) ^ (bit_mask & device_list)
+      # self.logger.debug("current interface value should after driving = %s", str(BinaryValue(self.low_speed_if.d_plus)))
+      # self.logger.debug("current interface value should after driving = %s", str(BinaryValue(self.low_speed_if.d_minus)))
+      self.logger.debug("current interface value should after driving " + str(self.low_speed_if.d_plus) +" " + str(self.low_speed_if.d_minus))
     def drive_if_bits(value):
       if(value == 1):
         self.logger.debug("Drving Values from variables to interface d_plus = %2b, d_minus = %2b", self.low_speed_if.d_plus, self.low_speed_if.d_minus)
@@ -229,6 +242,9 @@ class USB_lowspeed_device_driver(uvm_driver):
     write_data_seen = 0
     SYNC_PACKET = [1, 0, 0, 0, 0, 0, 0, 1]
     READ_PID    = [1, 0, 0, 1, 0, 1, 1, 0]
+    WRITE_PID   = [0, 0, 0, 1, 1, 0, 0, 0]
+    DATA0_PID   = [0, 0, 1, 1, 1, 1, 0, 0]
+    DATA1_PID   = [0, 0, 1, 0, 1, 1, 0, 1]
     self.logger.info("Starting to record for a response")
     while True:
       await RisingEdge(self.low_speed_if.dut.low_clock)
@@ -310,6 +326,19 @@ class USB_lowspeed_device_driver(uvm_driver):
             read_req_seen = 1
             data_buffer   = []
             self.logger.debug("Packet received is READ_PID Packet")
+            start_of_packet = 0
+          elif(data_buffer == WRITE_PID):
+            write_req_seen  = 1
+            local_counter   = 0
+            self.low_item.req_type = request_type.WRITE
+            data_buffer     = []
+            self.logger.debug("Packet received is WRITE_PID Packet")
+            start_of_packet = 0
+          elif((data_buffer == DATA0_PID) or (data_buffer == DATA1_PID)):
+            write_data_seen   = 1
+            local_counter     = 0
+            data_buffer       = []
+            self.logger.debug("Packet received is WRITE_PID Packet")
             start_of_packet = 0
           else:
             self.logger.debug("Packet received is Undefined. Read_req = %0d, write_req = %0d, write_data = %0d",

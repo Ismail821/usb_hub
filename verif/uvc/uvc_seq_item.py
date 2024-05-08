@@ -1,4 +1,5 @@
 from pyuvm import uvm_sequence_item, ConfigDB, UVMError
+from cocotb.binary import BinaryValue
 from verif.uvc.uvc_enums import *
 import queue
 import crcmod
@@ -16,6 +17,7 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   req_type        = 0
   address         = 0
   end_point       = 0
+  address_field   = 0
   pid             = []
   crc             = []
   data            = 0
@@ -33,12 +35,16 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
   def randomize(self, req):
     if(req):
       self.req_type     = random.choice(list(request_type))
+      self.req_type     = request_type.WRITE
       self.logger.warning("Choosen a Request of the Type" + self.req_type.name)
       if(self.req_type == request_type.WRITE):
         ##----------------Command-Packet-------------------------------##
         self.pid.append(pid_token_type.OUT)
         self.address      = random.choice(self.uvc_cfg.device_address_list)
         self.end_point    = random.randint(0, self.uvc_cfg.number_of_devices)
+        self.crc          = 0b00000
+        self.address_field =  str(BinaryValue(self.address, 7)) + str(BinaryValue(self.end_point, 4)) + str(BinaryValue(self.crc, 5))
+        self.address_field = int(self.address_field)
         # self.crc.append(self.calculate_crc())
         ##----------------Data-Packet----------------------------------##
         self.pid.append(pid_data_type.DATA0)
@@ -50,15 +56,20 @@ class USB_Lowspeed_Data_Seq_Item(uvm_sequence_item):
         self.pid.append(pid_token_type.IN)
         self.address      = random.choice(self.uvc_cfg.device_address_list)
         self.end_point    = random.randint(0, self.uvc_cfg.number_of_devices)
-        # self.crc.append(self.calculate_crc())
+        self.crc          = 0b00000
+        self.address_field =  str(BinaryValue(self.address, 7)) + str(BinaryValue(self.end_point, 4)) + str(BinaryValue(self.crc, 5))
+        self.address_field = int(self.address_field)
         ##----------------Acknowledgement-Packet-----------------------##
         self.pid.append(pid_handshake_type.ACK)
     else:
         if(self.req_type == request_type.READ):
           ##----------------Data-Packet----------------------------------##
-          self.pid.append(pid_data_type.DATA0)
-          self.data_bytes = random.randint(0,self.DATA_MAX_BYTES)
-          self.d_data       = random.randint(0, 8*self.data_bytes)
+          if(random.random() < 40):
+            self.pid.append(pid_data_type.DATA0)
+            self.data_bytes = random.randint(0,self.DATA_MAX_BYTES)
+            self.d_data     = random.randint(0, 8*self.data_bytes)
+          else:
+            self.pid.append(pid_handshake_type.NAK)
         if(self.req_type == request_type.WRITE):
           # self.crc.append(self.calculate_crc())
           ##----------------Acknowledgement-Packet-----------------------##

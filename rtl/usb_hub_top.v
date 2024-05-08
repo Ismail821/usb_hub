@@ -43,7 +43,7 @@ wire [NUM_USB_DEVICES*`REQUEST_SERIAL_DATA_TYPE_WIDTH-1:0]
 wire [`DEV_RANGE] polling_clock;
 wire [`DEV_RANGE] driver_active;
 reg  [`DEV_RANGE] driver_active_d1 = 0;
-inout wire [NUM_USB_DEVICES*2-1:0] usb_signals;
+wire [NUM_USB_DEVICES*2-1:0] usb_signals;
 
 //Connections for response path
 wire [`DEV_RANGE] usb_tr_serial_data_out;
@@ -84,10 +84,10 @@ end
 genvar i;
 generate
   for (i=0; i<NUM_USB_DEVICES; i=i+1) begin
-    assign usb_signals[(i*2)]   = driver_active_d1 ? 1'bz : device_d_plus[i] ;
-    assign usb_signals[(i*2)+1] = driver_active_d1 ? 1'bz : device_d_minus[i];
-    assign device_d_plus[i]     = driver_active_d1 ? usb_signals[(i*2)]  : 1'bz;
-    assign device_d_minus[i]    = driver_active_d1 ? usb_signals[(i*2)+1]: 1'bz;
+    assign usb_signals[(i*2)]   = driver_active_d1[i] ? 1'bz : device_d_plus[i] ;
+    assign usb_signals[(i*2)+1] = driver_active_d1[i] ? 1'bz : device_d_minus[i];
+    assign device_d_plus[i]     = driver_active_d1[i] ? usb_signals[(i*2)]  : 1'bz;
+    assign device_d_minus[i]    = driver_active_d1[i] ? usb_signals[(i*2)+1]: 1'bz;
   end
 endgenerate
 
@@ -164,7 +164,7 @@ sipo dev_sipo [`DEV_RANGE] (
 );
 
 fifo dev_fifo[`DEV_RANGE] (
-  .clk(clock),
+  .clk(low_clock),
   .rst(reset),
   .w_data(dev_sipo_data_out),
   .wr_en(dev_sipo_data_out_val),
@@ -229,7 +229,7 @@ sipo host_sipo [`DEV_RANGE] (
   .rst(|reset),
   .s_data_in(dev_usb_tr_data_out),
   .s_data_in_val(dev_usb_tr_data_out_val),
-  .sipo_cancel(),     //add seq_detect
+  .sipo_cancel(1'b1),     //add seq_detect
   .p_data_out(host_sipo_data_out),
   .p_data_out_val(host_sipo_data_out_val)
 );

@@ -86,6 +86,9 @@ class USB_lowspeed_host_driver(uvm_driver):
         # cocotb.raise.ValueError()
       self.logger.info("Received sequence item with TID = %0d, %s",   self.hi_item.transaction_id, vars(self.hi_item))
       await(self.start_transaction())
+      random_delay = random.randint(20, 100)
+      for i in range (random_delay):
+        await RisingEdge(self.low_speed_if.dut.low_clock)
       self.seq_item_port.item_done()
 
   async def start_transaction(self):
@@ -113,17 +116,8 @@ class USB_lowspeed_host_driver(uvm_driver):
     #Whatever the Start signal condition is
 
   async def sync_packets(self):
+    self.low_speed_if.dut.host_low_packet_state.value = DEBUG_PACKET.SYNC_PACKET.value
     await self.drive_signal(0b10000001,8)
-    # for i in range (6):
-    #   await RisingEdge(self.low_speed_if.dut.low_clock)
-    #   self.low_speed_if.dut.host_low_packet_state.value = DEBUG_PACKET.SYNC_PACKET.value
-    #   self.logger.debug("Driving J in Low_clock")
-    #   self.low_speed_if.dut.host_d_minus.value = 0
-    #   self.low_speed_if.dut.host_d_plus.value  = 1
-    #   await RisingEdge(self.low_speed_if.dut.low_clock)
-    #   self.logger.debug("Driving k in Low_clock")
-    #   self.low_speed_if.dut.host_d_minus.value = 1
-    #   self.low_speed_if.dut.host_d_plus.value  = 0
 
   async def start_token_packet(self):
     self.logger.debug("Starting driving PID Bits")
@@ -143,9 +137,7 @@ class USB_lowspeed_host_driver(uvm_driver):
       UVMError("Address is a 7 bit field Cannot be greater than 128")
     self.low_speed_if.dut.host_low_packet_state.value = DEBUG_PACKET.ADDRESS_PACKET.value
     self.logger.debug("Starting to Drive Address Packet with Address = 0x%0x", self.hi_item.address)
-    await self.drive_signal(self.hi_item.address, 7)
-    self.low_speed_if.dut.host_low_packet_state.value = DEBUG_PACKET.CRC_PACKET.value
-    # await self.drive_signal(self.hi_item.crc[0].vaue, 5)
+    await self.drive_signal(self.hi_item.address_field, 16)
 
   async def start_data_packet(self):
     self.logger.debug("Starting driving PID Bits")
@@ -176,6 +168,9 @@ class USB_lowspeed_host_driver(uvm_driver):
       await RisingEdge(self.low_speed_if.dut.low_clock)
     self.low_speed_if.dut.host_d_plus.value   =  0
     self.low_speed_if.dut.host_d_minus.value  =  0
+    await RisingEdge(self.low_speed_if.dut.low_clock)
+    self.low_speed_if.dut.host_d_plus.value   =  BinaryValue("z", 1)
+    self.low_speed_if.dut.host_d_minus.value  =  BinaryValue("z", 1)
     await RisingEdge(self.low_speed_if.dut.low_clock)
 
   async def reset_all_devices(self):

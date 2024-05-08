@@ -146,15 +146,16 @@ class USB_low_seq(uvc_sequence):
         await self.wait_low_clock(random.randint(5,20))
       self.logger.info("Done generating sequence loops")
     else:
-      rsp = USB_Lowspeed_Data_Seq_Item("dummy_rsp_item")
-      rsp.device_number = self.device_number
-      await self.start_item(rsp)
-      await self.finish_item(rsp)
-      rsp = await self.get_response()
-      rsp.name = "Response_for_Req"
-      self.logger.info("Received a Request from the Driver")
-      rsp.randomize(req=0)
-      await self.start_item(rsp)
-      self.logger.critical("Sequence finished sequence.start_item")
-      await self.finish_item(rsp)
+      for i in range (10):
+        rsp = USB_Lowspeed_Data_Seq_Item("dummy_rsp_item")
+        rsp.device_number = self.device_number
+        await self.start_item(rsp)
+        await self.finish_item(rsp)
+        rsp = await self.get_response()
+        rsp.name = "Response_for_Req"
+        self.logger.info("Received a Request from the Driver")
+        rsp.randomize(req=0)
+        await self.start_item(rsp)
+        self.logger.critical("Sequence finished sequence.start_item")
+        await self.finish_item(rsp)
       

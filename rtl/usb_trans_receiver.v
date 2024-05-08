@@ -22,23 +22,18 @@ module usb_host_trans_receiver #(
   input   serial_data_in_last,
   input   serial_data_in_avail,
 
-  output  request_serial_data,
+  output  reg request_serial_data,
   output  reg [`REQUEST_SERIAL_DATA_TYPE_RANGE] request_serial_data_type,
 
   //Signals Connected to SIPO, Send data into SIPO to FIFO, when we get data 
   //send it along with val. if SIPO is still empty. Then we can send the Ack
-  output  serial_data_out,
-  output  serial_data_out_val,
+  output  reg serial_data_out,
+  output  reg serial_data_out_val,
 
-  output  driving_req,
+  output  reg driving_req,
   //The inout signals that will be driven. it's a concatination of d+ and d-
   inout   wire [1:0] usb_signals
 );
-
-  //Module Out declarations
-  reg serial_data_out;
-  reg serial_data_out_val;
-  reg request_serial_data;
 
   ///Flags that'll be used for inter block communications
   reg request_ongoing;
@@ -51,8 +46,12 @@ module usb_host_trans_receiver #(
   reg [`USB_TR_STATE_RANGE] output_usb_state;
   reg [`USB_TR_STATE_RANGE] output_usb_state_d1 = 0;
   reg [`USB_TR_STATE_RANGE] reset_done;
-  reg driving_req;
   reg start_of_packet;
+  reg start_of_packet_d0;
+  reg start_of_packet_d1;
+  reg start_of_packet_d2;
+  reg start_of_packet_d3;
+  reg start_of_packet_d4;
 
   //Some flopped signals for Storing prev values
   reg [1:0] j_state;
@@ -93,10 +92,18 @@ module usb_host_trans_receiver #(
     request_ongoing_d1    <= request_ongoing;
     request_ongoing_d2    <= request_ongoing_d1;
     request_ongoing_d3    <= request_ongoing_d2;
-    response_ongoing_d1   <= response_ongoing;
+    response_ongoing_d1   <= &response_ongoing;
     serial_data_in_last_d1<= serial_data_in_last;
     reset_d1              <= reset;
     usb_state_prev1       <= usb_signals;     
+    start_of_packet_d1    <= start_of_packet_d0;
+    start_of_packet_d2    <= start_of_packet_d1;
+    start_of_packet_d3    <= start_of_packet_d2;
+    start_of_packet_d4    <= start_of_packet_d3;
+  end
+
+  always @(*) begin
+    start_of_packet_d0 = start_of_packet;
   end
 
   always @(reset) begin
@@ -169,6 +176,10 @@ module usb_host_trans_receiver #(
               request_serial_data       = 1;
               request_serial_data_type  = `REQUEST_SERIAL_DATA_TYPE_PASS_THROUGH; 
             end
+          end
+          `REQUEST_SERIAL_DATA_TYPE_PID_ACK: begin
+            request_ongoing      = 0;
+            request_serial_data  = 0;
           end
           endcase
         end else begin
@@ -252,6 +263,17 @@ module usb_host_trans_receiver #(
       se1: begin //{
       end//}
       default: begin
+        if((start_of_packet    == 0) &&
+           (start_of_packet_d1 == 0) &&
+           (start_of_packet_d2 == 0) &&
+           (start_of_packet_d3 == 0) &&
+           (start_of_packet_d4 == 1)
+           )  begin
+          response_ongoing = 2'b00;
+          request_ongoing      = 1;
+          request_serial_data <= 1;
+          request_serial_data_type <= `REQUEST_SERIAL_DATA_TYPE_PID_ACK;
+        end
       end
     endcase
   end

@@ -1,6 +1,6 @@
 
 
-module sipo #(parameter integer DATA_WIDTH=8)(
+module sipo #(parameter DATA_WIDTH=8)(
     
     input wire clk,
     input wire rst,
